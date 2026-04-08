@@ -3,3 +3,4 @@ build
 cache
 crytic-export
 out
+.DS_Store
