@@ -9,22 +9,35 @@ echo "============================="
 echo " Phase 1: Foundry Operations "
 echo "============================="
 
-echo "Installing missing Foundry dependencies (if any)..."
-forge install
+if [ ! -d "lib" ]; then
+    echo "Installing missing Foundry dependencies..."
+    forge install
+fi
+
+echo "Generating remappings for external tools..."
+forge remappings > remappings.txt
+
+echo "Formatting contracts..."
+forge fmt
 
 echo "Building contracts..."
 forge build --sizes
 
-echo "Running Foundry test suite..."
-forge test -vvv
+echo "Running tests and generating gas report..."
+forge test -vvv --gas-report
 
-echo "Executing Foundry deployment scripts (Dry Run)..."
-for script_file in script/*.s.sol; do
-    if [ -f "$script_file" ]; then
+echo "Running coverage analysis..."
+forge coverage
+
+echo "Executing scripts..."
+if [ -d "script" ]; then
+    find script -name "*.s.sol" | while read -r script_file; do
         echo "Running script: $script_file"
         forge script "$script_file" -vvv
-    fi
-done
+    done
+else
+    echo "No script directory found. Skipping."
+fi
 
 echo "=========================="
 echo " Phase 2: Security Audits "
@@ -32,30 +45,44 @@ echo "=========================="
 
 TIMEOUT=60
 
-echo " Running Slither (Static Analysis)"
+echo "Running Slither (Static Analysis)"
 slither . || true
 
-echo " Running Surya (Architecture & Graphs)"
-surya describe src/*.sol || true
-surya inheritance src/*.sol || true
+echo "Running Surya (Architecture & Graphs)"
+ALL_CONTRACTS=$(find src -name "*.sol")
+surya describe $ALL_CONTRACTS || true
+surya inheritance $ALL_CONTRACTS || true
 
-echo " Running Mythril (Symbolic Execution)"
-for contract_file in src/*.sol; do
-    if [ -f "$contract_file" ]; then
-        echo "Analyzing $contract_file with Mythril (Max ${TIMEOUT}s)..."
-        myth analyze "$contract_file" --execution-timeout $TIMEOUT || true
-    fi
+echo "Running Mythril (Symbolic Execution)"
+cat <<EOF > mythril_solc.json
+{
+  "remappings": [
+    "openzeppelin-contracts/=lib/openzeppelin-contracts/",
+    "forge-std/=lib/forge-std/src/"
+  ],
+  "optimizer": {
+    "enabled": true,
+    "runs": 200
+  }
+}
+EOF
+find src -name "*.sol" | while read -r contract_file; do
+    echo "Analyzing $contract_file with Mythril (Max ${TIMEOUT}s)..."
+    myth analyze "$contract_file" --solc-json mythril_solc.json --execution-timeout $TIMEOUT || true
 done
 
-echo " Running Echidna (Fuzzing)"
-for contract_file in src/*.sol; do
-    if [ -f "$contract_file" ]; then
-        base_name=$(basename -- "$contract_file")
-        contract_name="${base_name%.*}"
-        echo "Fuzzing $contract_file (Target: $contract_name, Max ${TIMEOUT}s)..."
-        timeout $TIMEOUT echidna "$contract_file" --contract "$contract_name" || true
-    fi
-done
+echo "Running Echidna (Fuzzing)"
+if [ -f "test/EchidnaLottery.t.sol" ]; then
+    echo "Fuzzing test/EchidnaLottery.t.sol (Target: EchidnaLottery, Max ${TIMEOUT}s)..."
+    timeout $TIMEOUT echidna "test/EchidnaLottery.t.sol" --contract "EchidnaLottery" || true
+else
+    echo "No Echidna target found. Skipping."
+fi
+
+echo "Running cleanup..."
+forge clean
+rm -rf crytic-export
+rm -f remappings.txt mythril_solc.json
 
 echo "===================="
 echo " Execution Complete "
