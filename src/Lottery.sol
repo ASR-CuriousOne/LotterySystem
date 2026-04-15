@@ -7,6 +7,7 @@ import {ReentrancyGuard} from "openzeppelin-contracts/contracts/utils/Reentrancy
 /**
  * @title Decentralized Lottery with Commit-Reveal
  * @notice Implements a secure, verifiable lottery using a commit-reveal randomness scheme.
+ * @dev Inherits from OpenZeppelin's Ownable for access control and ReentrancyGuard for withdrawal safety.
  */
 contract Lottery is Ownable, ReentrancyGuard {
     // --- Enums & Structs ---
@@ -19,6 +20,7 @@ contract Lottery is Ownable, ReentrancyGuard {
 
     // --- State Variables ---
     LotteryPhase public currentPhase;
+    // forge-lint: disable-next-line(screaming-snake-case-immutable)
     uint256 public immutable ticketPrice;
     uint256 public prizePool;
     bytes32 public committedHash;
@@ -41,18 +43,19 @@ contract Lottery is Ownable, ReentrancyGuard {
     event PrizeClaimed(address indexed winner, uint256 amount);
 
     /**
-     * @notice Initializes the lottery with a specific ticket price
-     * @param _ticketPrice The cost to buy a single ticket in wei
+     * @notice Initializes the lottery with a specific ticket price.
+     * @param initialTicketPrice The cost to buy a single ticket in wei.
      */
-    constructor(uint256 _ticketPrice) Ownable(msg.sender) {
-        ticketPrice = _ticketPrice;
+    constructor(uint256 initialTicketPrice) Ownable(msg.sender) {
+        ticketPrice = initialTicketPrice;
         currentPhase = LotteryPhase.Open;
     }
 
     // --- Core Logic ---
 
     /**
-     * @notice Allows a user to purchase a ticket
+     * @notice Allows a user to purchase a ticket.
+     * @dev Reverts if the phase is not Open or if the exact ticket price is not sent.
      */
     function buyTicket() external payable {
         if (currentPhase != LotteryPhase.Open) revert Lottery__InvalidPhase(LotteryPhase.Open, currentPhase);
@@ -65,7 +68,8 @@ contract Lottery is Ownable, ReentrancyGuard {
     }
 
     /**
-     * @notice Closes the ticket sale phase.
+     * @notice Closes the ticket sale phase, preventing further purchases.
+     * @dev Only callable by contract owner. Reverts if no participants have joined.
      */
     function closeSale() external onlyOwner {
         if (currentPhase != LotteryPhase.Open) revert Lottery__InvalidPhase(LotteryPhase.Open, currentPhase);
@@ -76,8 +80,9 @@ contract Lottery is Ownable, ReentrancyGuard {
     }
 
     /**
-     * @notice Owner commits the hashed secret
-     * @param _hash The keccak256 hash of the secret string
+     * @notice Owner commits the hashed secret.
+     * @dev Only callable by owner. Transitions the state to the Committed phase.
+     * @param _hash The keccak256 hash of the secret string.
      */
     function commitHash(bytes32 _hash) external onlyOwner {
         if (currentPhase != LotteryPhase.SaleClosed) {
@@ -91,8 +96,9 @@ contract Lottery is Ownable, ReentrancyGuard {
     }
 
     /**
-     * @notice Owner reveals the secret to draw the winner deterministically
-     * @param _secret The raw string/bytes that was previously hashed
+     * @notice Owner reveals the secret to draw the winner deterministically.
+     * @dev Verifies the secret against the committedHash. Calculates the winner and transitions to Drawn.
+     * @param _secret The raw string or bytes that was previously hashed.
      */
     function revealAndDraw(bytes32 _secret) external onlyOwner {
         if (currentPhase != LotteryPhase.Committed) revert Lottery__InvalidPhase(LotteryPhase.Committed, currentPhase);
@@ -109,7 +115,8 @@ contract Lottery is Ownable, ReentrancyGuard {
     }
 
     /**
-     * @notice Allows the winner to withdraw the prize pool
+     * @notice Allows the winner to withdraw the prize pool.
+     * @dev Applies nonReentrant modifier. Reverts if the caller is not the recorded winner.
      */
     function claimPrize() external nonReentrant {
         if (currentPhase != LotteryPhase.Drawn) revert Lottery__InvalidPhase(LotteryPhase.Drawn, currentPhase);
@@ -125,9 +132,18 @@ contract Lottery is Ownable, ReentrancyGuard {
     }
 
     /**
-     * @notice Returns comprehensive data about the current lottery state
+     * @notice Returns comprehensive data about the current lottery state.
+     * @return phase The current phase of the lottery.
+     * @return price The exact cost of a single ticket.
+     * @return participantCount The total number of tickets sold.
+     * @return pool The total accumulated prize pool in wei.
+     * @return winningAddress The address of the winner (address(0) if not yet drawn).
      */
-    function getLotteryInfo() external view returns (LotteryPhase, uint256, uint256, uint256, address) {
+    function getLotteryInfo()
+        external
+        view
+        returns (LotteryPhase phase, uint256 price, uint256 participantCount, uint256 pool, address winningAddress)
+    {
         return (currentPhase, ticketPrice, participants.length, prizePool, winner);
     }
 }
