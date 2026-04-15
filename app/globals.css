@@ -217,3 +217,15 @@
     border-color: hsl(185 100% 50% / 0.3);
   }
 }
+
+/* Use custom numeric controls in UI instead of browser-default spin buttons. */
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

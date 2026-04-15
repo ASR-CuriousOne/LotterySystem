@@ -1,4 +1,8 @@
+"use client";
+
+import { LotteryTerminal } from "@/components/LotteryTerminal";
 import Navbar from "@/components/Navbar";
+import { RecentPlayers } from "@/components/RecentPlayers";
 
 export default function Home() {
   return (
@@ -21,6 +25,8 @@ export default function Home() {
               Provably fair. Fully on-chain. Enter to win.
             </p>
           </div>
+          <LotteryTerminal />
+          <RecentPlayers />
         </div>
       </main>
     </div>
