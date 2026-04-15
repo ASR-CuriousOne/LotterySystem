@@ -1,6 +1,10 @@
 .env
+broadcast
 build
 cache
 crytic-export
+mythril_solc.json
+node_modules
+remappings.txt
 out
 .DS_Store

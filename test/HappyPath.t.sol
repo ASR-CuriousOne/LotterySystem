@@ -4,7 +4,15 @@ pragma solidity ^0.8.20;
 import {BaseLotteryTest} from "./BaseLottery.t.sol";
 import {Lottery} from "../src/Lottery.sol";
 
+/**
+ * @title Happy Path Lottery Lifecycle Test
+ * @notice Verifies the flawless end-to-end execution of the lottery under normal conditions.
+ */
 contract HappyPathTest is BaseLotteryTest {
+    /**
+     * @notice Tests all five operational steps: Buy, Close, Commit, Reveal, and Claim.
+     * @dev Simulates multiple players, fast-forwards block numbers, and asserts state changes and balances.
+     */
     function testHappyPathFullLotteryLifecycle() public {
         // 1. Open Phase: Players buy tickets
         vm.prank(player1);
