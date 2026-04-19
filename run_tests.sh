@@ -58,6 +58,7 @@ cat <<EOF > mythril_solc.json
 {
   "remappings": [
     "openzeppelin-contracts/=lib/openzeppelin-contracts/",
+    "chainlink-brownie-contracts/=lib/chainlink-brownie-contracts/",
     "forge-std/=lib/forge-std/src/"
   ],
   "optimizer": {
