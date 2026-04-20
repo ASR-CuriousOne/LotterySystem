@@ -20,8 +20,7 @@ contract Lottery is Ownable, ReentrancyGuard {
 
     // --- State Variables ---
     LotteryPhase public currentPhase;
-    // forge-lint: disable-next-line(screaming-snake-case-immutable)
-    uint256 public immutable ticketPrice;
+    uint256 public immutable TICKET_PRICE;
     uint256 public prizePool;
     bytes32 public committedHash;
     address public winner;
@@ -47,7 +46,7 @@ contract Lottery is Ownable, ReentrancyGuard {
      * @param initialTicketPrice The cost to buy a single ticket in wei.
      */
     constructor(uint256 initialTicketPrice) Ownable(msg.sender) {
-        ticketPrice = initialTicketPrice;
+        TICKET_PRICE = initialTicketPrice;
         currentPhase = LotteryPhase.Open;
     }
 
@@ -59,7 +58,7 @@ contract Lottery is Ownable, ReentrancyGuard {
      */
     function buyTicket() external payable {
         if (currentPhase != LotteryPhase.Open) revert Lottery__InvalidPhase(LotteryPhase.Open, currentPhase);
-        if (msg.value != ticketPrice) revert Lottery__IncorrectTicketPrice(ticketPrice, msg.value);
+        if (msg.value != TICKET_PRICE) revert Lottery__IncorrectTicketPrice(TICKET_PRICE, msg.value);
 
         participants.push(msg.sender);
         prizePool += msg.value;
@@ -144,6 +143,6 @@ contract Lottery is Ownable, ReentrancyGuard {
         view
         returns (LotteryPhase phase, uint256 price, uint256 participantCount, uint256 pool, address winningAddress)
     {
-        return (currentPhase, ticketPrice, participants.length, prizePool, winner);
+        return (currentPhase, TICKET_PRICE, participants.length, prizePool, winner);
     }
 }

@@ -8,10 +8,16 @@ import {console2} from "forge-std/Test.sol";
 /**
  * @title Advanced Threat Simulation (Attacker Bots)
  * @notice Simulates real-world attack vectors including Miner MEV, Owner DoS, and Reentrancy.
+ * @dev Inherits from BaseLotteryTest to utilize the standard testing state and accounts.
  */
 contract AttackerBotsTest is BaseLotteryTest {
+    /// @notice The instance of the malicious reentrancy bot used for testing
     GreedyReentrantBot public reentrancyBot;
 
+    /**
+     * @notice Initializes the test environment and funds the attacker bot.
+     * @dev Overrides the BaseLotteryTest setUp function.
+     */
     function setUp() public override {
         super.setUp();
         reentrancyBot = new GreedyReentrantBot(lottery);
@@ -19,8 +25,8 @@ contract AttackerBotsTest is BaseLotteryTest {
     }
 
     /**
-     * @notice Simulates an owner trying to change the commit hash after seeing the
-     * ticket sales, or trying to bypass the lock-in phase.
+     * @notice Simulates an owner attempting to overwrite the commit hash after seeing ticket sales.
+     * @dev Validates that the state machine strictly prevents re-committing hashes to alter outcomes.
      */
     function testBot_OwnerCannotTamperWithCommitment() public {
         vm.prank(player1);
@@ -45,9 +51,8 @@ contract AttackerBotsTest is BaseLotteryTest {
     }
 
     /**
-     * @notice PROVES THE "RESIDUAL TRUST" FLAW: If the owner buys a ticket and
-     * computes that they will lose, they can simply refuse to reveal the secret,
-     * trapping everyone's funds forever.
+     * @notice Proves the "Residual Trust" flaw of the commit-reveal scheme.
+     * @dev Demonstrates that if the owner participates and realizes they will lose, they can withhold the reveal transaction to permanently lock funds.
      */
     function testBot_OwnerCanDenyServiceByWithholdingSecret() public {
         vm.deal(owner, 1 ether);
@@ -83,8 +88,8 @@ contract AttackerBotsTest is BaseLotteryTest {
     }
 
     /**
-     * @notice Simulates a malicious Validator intercepting the owner's reveal transaction
-     * in the mempool and holding it until a favorable block.number arrives.
+     * @notice Simulates a malicious Validator (Miner) executing an MEV attack via block manipulation.
+     * @dev The attacker scans the mempool, computes favorable block outcomes off-chain, and delays the transaction inclusion until they are guaranteed to win.
      */
     function testBot_MinerBlockManipulation() public {
         address minerAttacker = makeAddr("minerAttacker");
@@ -132,8 +137,8 @@ contract AttackerBotsTest is BaseLotteryTest {
     }
 
     /**
-     * @notice Verifies that a malicious smart contract cannot drain the prize pool
-     * by re-entering the claimPrize function during the ETH transfer.
+     * @notice Verifies that the ReentrancyGuard successfully blocks a malicious smart contract from draining the prize pool.
+     * @dev Forces the bot to win, then allows its fallback function to maliciously re-enter the claimPrize function.
      */
     function testBot_GreedyReentrancyAttempt() public {
         vm.prank(player1);
@@ -168,26 +173,42 @@ contract AttackerBotsTest is BaseLotteryTest {
 }
 
 /**
- * @notice A malicious contract designed to exploit state changes by re-entering
- * the target contract during ETH fallbacks.
+ * @title Greedy Reentrant Bot
+ * @notice A malicious contract designed to exploit state changes via recursive ETH fallback calls.
  */
 contract GreedyReentrantBot {
+    /// @notice The target lottery contract to attack
     Lottery public target;
+
+    /// @notice Tracks the number of reentrancy attempts to prevent infinite gas loops
     uint256 public attackCount;
 
+    /**
+     * @notice Initializes the attacker bot with the target contract.
+     * @param _target The address of the vulnerable lottery contract.
+     */
     constructor(Lottery _target) {
         target = _target;
     }
 
+    /**
+     * @notice Initiates the attack by purchasing a ticket.
+     */
     function buyTicket() external {
         target.buyTicket{value: 0.01 ether}();
     }
 
+    /**
+     * @notice Triggers the initial, legitimate prize claim.
+     */
     function claim() external {
         target.claimPrize();
     }
 
-    // The malicious payload: triggers automatically when receiving ETH
+    /**
+     * @notice The malicious payload that automatically triggers when receiving ETH.
+     * @dev Attempts to re-enter the claimPrize function before the target updates its state.
+     */
     receive() external payable {
         // Attack exactly once to trigger the ReentrancyGuard
         if (attackCount == 0) {
