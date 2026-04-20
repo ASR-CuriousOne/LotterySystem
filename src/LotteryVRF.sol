@@ -21,13 +21,11 @@ contract LotteryVRF is VRFConsumerBaseV2, Ownable, ReentrancyGuard {
 
     Phase public currentPhase;
 
-    // forge-lint: disable-next-line(screaming-snake-case-immutable)
     uint256 public immutable ticketPrice;
     uint256 public prizePool;
     address public winner;
     address[] public participants;
 
-    // --- Chainlink VRF Variables ---
     VRFCoordinatorV2Interface public immutable VRF_COORDINATOR;
     bytes32 public immutable KEY_HASH;
     uint64 public immutable SUBSCRIPTION_ID;
