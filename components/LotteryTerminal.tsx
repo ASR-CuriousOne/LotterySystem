@@ -8,6 +8,7 @@ import {
   Trophy,
   Users,
   Coins,
+  Wallet,
   ChevronUp,
   ChevronDown,
 } from "lucide-react";
@@ -44,7 +45,9 @@ function StatBlock({
 }
 
 export function LotteryTerminal() {
-  const [tickets, setTickets] = useState(1);
+  const [ticketIndex, setTicketIndex] = useState(0);
+  const [refundRoundId, setRefundRoundId] = useState(0);
+  const [refundTicketIndex, setRefundTicketIndex] = useState(0);
   const {
     players,
     prizePool,
@@ -52,19 +55,21 @@ export function LotteryTerminal() {
     isConnected,
     isEntering,
     isClaiming,
+    isClaimingRefund,
+    canWithdraw,
+    pendingWithdrawals,
+    roundMeta,
     isContractConfigured,
     enterLottery,
-    isDrawn,
-    isWinner,
+    claimRefund,
     claimWinnings,
   } = useLotteryContract();
 
   const handleBuy = async () => {
-    if (tickets < 1) return;
     try {
-      await enterLottery(tickets);
-      toast.success(`${tickets} ticket${tickets > 1 ? "s" : ""} purchased!`, {
-        description: "Good luck, anon 🍀",
+      await enterLottery(ticketIndex);
+      toast.success("Ticket purchased!", {
+        description: `Ticket #${ticketIndex} entered for round ${roundMeta.currentRoundId}.`,
       });
     } catch (error) {
       const message =
@@ -75,19 +80,31 @@ export function LotteryTerminal() {
     }
   };
 
-  const totalCost = (Number(ticketPrice) * tickets).toFixed(4);
-  const canClaimPrize = isConnected && isDrawn && isWinner;
-
   const handleClaim = async () => {
     try {
       await claimWinnings();
-      toast.success("Prize claim submitted!", {
-        description: "Check your wallet for confirmation.",
+      toast.success("Withdraw submitted!", {
+        description: "Your pending vault balance is being withdrawn.",
       });
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Please try again.";
       toast.error("Claim failed", {
+        description: message,
+      });
+    }
+  };
+
+  const handleRefundClaim = async () => {
+    try {
+      await claimRefund(refundRoundId, refundTicketIndex);
+      toast.success("Refund claim submitted!", {
+        description: `Round ${refundRoundId}, ticket #${refundTicketIndex}.`,
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Please try again.";
+      toast.error("Refund claim failed", {
         description: message,
       });
     }
@@ -119,9 +136,13 @@ export function LotteryTerminal() {
           />
           <StatBlock
             icon={Users}
-            label="Players"
+            label="Tickets Sold"
             value={String(players.length)}
           />
+        </div>
+
+        <div className="rounded-lg border border-border/50 bg-secondary/40 p-3 text-sm text-muted-foreground">
+          Round {roundMeta.currentRoundId} • {roundMeta.phaseLabel}
         </div>
 
         {/* Buy Area */}
@@ -135,54 +156,29 @@ export function LotteryTerminal() {
             </div>
           ) : (
             <>
-              {canClaimPrize && (
-                <div className="space-y-3 rounded-md border border-primary/30 bg-primary/5 p-3">
-                  <p className="text-center text-sm text-muted-foreground">
-                    You are the winning wallet. Claim the prize to withdraw the
-                    pool.
-                  </p>
-                  <Button
-                    onClick={handleClaim}
-                    disabled={isClaiming || !isContractConfigured}
-                    className="w-full bg-primary text-primary-foreground font-mono text-base hover:bg-primary/90 glow-primary transition-all"
-                    size="lg"
-                  >
-                    {isClaiming ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Confirm in Wallet...
-                      </>
-                    ) : (
-                      <>
-                        <Trophy className="mr-2 h-4 w-4" />
-                        Claim Prize
-                      </>
-                    )}
-                  </Button>
-                </div>
-              )}
-
               <div className="flex items-center gap-3">
                 <label className="text-sm text-muted-foreground whitespace-nowrap">
-                  Tickets
+                  Ticket #
                 </label>
                 <div className="relative w-full max-w-44">
                   <Input
                     type="number"
-                    min={1}
-                    max={100}
-                    value={tickets}
+                    min={0}
+                    max={255}
+                    value={ticketIndex}
                     onChange={(e) =>
-                      setTickets(Math.max(1, Number(e.target.value)))
+                      setTicketIndex(
+                        Math.max(0, Math.min(255, Number(e.target.value))),
+                      )
                     }
                     className="font-mono bg-input border-border/50 pr-10"
                   />
                   <div className="absolute inset-y-1 right-1 flex w-7 flex-col overflow-hidden rounded-md border border-border/60 bg-secondary/70">
                     <button
                       type="button"
-                      aria-label="Increase tickets"
+                      aria-label="Increase ticket index"
                       onClick={() =>
-                        setTickets((prev) => Math.min(100, prev + 1))
+                        setTicketIndex((prev) => Math.min(255, prev + 1))
                       }
                       className="flex flex-1 items-center justify-center text-muted-foreground transition-colors hover:bg-primary/20 hover:text-primary"
                     >
@@ -190,9 +186,9 @@ export function LotteryTerminal() {
                     </button>
                     <button
                       type="button"
-                      aria-label="Decrease tickets"
+                      aria-label="Decrease ticket index"
                       onClick={() =>
-                        setTickets((prev) => Math.max(1, prev - 1))
+                        setTicketIndex((prev) => Math.max(0, prev - 1))
                       }
                       className="flex flex-1 items-center justify-center border-t border-border/60 text-muted-foreground transition-colors hover:bg-primary/20 hover:text-primary"
                     >
@@ -201,7 +197,7 @@ export function LotteryTerminal() {
                   </div>
                 </div>
                 <span className="font-mono text-sm text-muted-foreground whitespace-nowrap">
-                  = {totalCost} ETH
+                  Cost {ticketPrice} ETH
                 </span>
               </div>
 
@@ -219,10 +215,80 @@ export function LotteryTerminal() {
                 ) : (
                   <>
                     <Ticket className="mr-2 h-4 w-4" />
-                    Buy Ticket{tickets > 1 ? "s" : ""}
+                    Buy Ticket #{ticketIndex}
                   </>
                 )}
               </Button>
+
+              <div className="space-y-2 rounded-md border border-border/40 bg-secondary/20 p-3">
+                <p className="text-xs text-muted-foreground">
+                  Vault balance: {pendingWithdrawals} ETH
+                </p>
+                <Button
+                  onClick={handleClaim}
+                  disabled={isClaiming || !isContractConfigured || !canWithdraw}
+                  variant="outline"
+                  className="w-full font-mono"
+                >
+                  {isClaiming ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Confirm in Wallet...
+                    </>
+                  ) : (
+                    <>
+                      <Wallet className="mr-2 h-4 w-4" />
+                      Withdraw Vault Funds
+                    </>
+                  )}
+                </Button>
+              </div>
+
+              <div className="space-y-3 rounded-md border border-border/40 bg-secondary/20 p-3">
+                <p className="text-xs text-muted-foreground">
+                  Refund fallback: claim for a voided round ticket you own.
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  <Input
+                    type="number"
+                    min={0}
+                    value={refundRoundId}
+                    onChange={(e) =>
+                      setRefundRoundId(Math.max(0, Number(e.target.value)))
+                    }
+                    className="font-mono bg-input border-border/50"
+                    placeholder="Round ID"
+                  />
+                  <Input
+                    type="number"
+                    min={0}
+                    max={255}
+                    value={refundTicketIndex}
+                    onChange={(e) =>
+                      setRefundTicketIndex(
+                        Math.max(0, Math.min(255, Number(e.target.value))),
+                      )
+                    }
+                    className="font-mono bg-input border-border/50"
+                    placeholder="Ticket Index"
+                  />
+                </div>
+                <Button
+                  onClick={handleRefundClaim}
+                  disabled={isClaimingRefund || !isContractConfigured}
+                  variant="outline"
+                  className="w-full font-mono"
+                >
+                  {isClaimingRefund ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Confirm in Wallet...
+                    </>
+                  ) : (
+                    "Claim Refund"
+                  )}
+                </Button>
+              </div>
             </>
           )}
         </div>

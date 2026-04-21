@@ -11,7 +11,7 @@ export default function Home() {
 
       {/* Ambient background effect */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-1/2 left-1/2 h-[800px] w-[800px] -translate-x-1/2 rounded-full bg-primary/5 blur-3xl" />
+        <div className="absolute -top-1/2 left-1/2 h-200 w-200 -translate-x-1/2 rounded-full bg-primary/5 blur-3xl" />
       </div>
 
       <main className="relative flex-1">
@@ -22,7 +22,8 @@ export default function Home() {
               <span className="text-glow text-primary">Lottery</span>
             </h1>
             <p className="text-muted-foreground">
-              Provably fair. Fully on-chain. Enter to win.
+              Round-based tickets, automated draw, and refund-safe vault
+              withdrawals.
             </p>
           </div>
           <LotteryTerminal />

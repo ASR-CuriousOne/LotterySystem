@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Crown, Loader2, User } from "lucide-react";
+import { Crown, Loader2, ShieldAlert, User } from "lucide-react";
 import { toast } from "sonner";
 import { useLotteryContract } from "@/hooks/useLotteryContract";
 
@@ -9,18 +9,45 @@ function truncateAddress(addr: string) {
 }
 
 export function RecentPlayers() {
-  const { players, isManager, isPicking, pickWinner, latestRevealSecret } =
-    useLotteryContract();
+  const {
+    players,
+    isManager,
+    isPicking,
+    pickWinner,
+    roundMeta,
+    upkeepNeeded,
+    enableRefundFallback,
+    isEnablingRefundFallback,
+  } = useLotteryContract();
 
   const handlePickWinner = async () => {
     try {
       await pickWinner();
-      toast.success("Winner drawn! 🎉", {
+      toast.success("Upkeep submitted", {
         description:
-          "The reveal secret was generated and used automatically by the frontend.",
+          "Randomness request flow has been triggered for this round.",
       });
-    } catch {
-      toast.error("Failed to draw winner");
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Please try again.";
+      toast.error("Failed to perform upkeep", {
+        description: message,
+      });
+    }
+  };
+
+  const handleEnableRefundFallback = async () => {
+    try {
+      await enableRefundFallback();
+      toast.success("Refund fallback enabled", {
+        description: "Users can now claim ticket refunds for the stuck round.",
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Please try again.";
+      toast.error("Failed to enable refund fallback", {
+        description: message,
+      });
     }
   };
 
@@ -57,17 +84,16 @@ export function RecentPlayers() {
         {isManager && (
           <div className="space-y-2">
             <p className="text-xs text-muted-foreground">
-              This runs close sale, commit hash, and reveal/draw in sequence.
+              Operator flow for the current round.
             </p>
-            {latestRevealSecret && (
-              <p className="break-all rounded-md border border-border/40 bg-secondary/30 px-2 py-1 font-mono text-xs text-muted-foreground">
-                Latest reveal secret: {latestRevealSecret}
-              </p>
-            )}
+            <p className="rounded-md border border-border/40 bg-secondary/30 px-2 py-1 font-mono text-xs text-muted-foreground">
+              Round {roundMeta.currentRoundId} • {roundMeta.phaseLabel} •
+              upkeepNeeded={upkeepNeeded ? "true" : "false"}
+            </p>
             <Button
               variant="outline"
               onClick={handlePickWinner}
-              disabled={isPicking || players.length === 0}
+              disabled={isPicking || !upkeepNeeded}
               className="w-full border-accent/30 font-mono text-accent hover:bg-accent/10 hover:text-accent"
             >
               {isPicking ? (
@@ -78,7 +104,25 @@ export function RecentPlayers() {
               ) : (
                 <>
                   <Crown className="mr-2 h-4 w-4" />
-                  Close Sale and Draw (Admin)
+                  Perform Upkeep (Admin)
+                </>
+              )}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleEnableRefundFallback}
+              disabled={isEnablingRefundFallback}
+              className="w-full border-destructive/30 font-mono text-destructive hover:bg-destructive/10 hover:text-destructive"
+            >
+              {isEnablingRefundFallback ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <ShieldAlert className="mr-2 h-4 w-4" />
+                  Enable Refund Fallback
                 </>
               )}
             </Button>

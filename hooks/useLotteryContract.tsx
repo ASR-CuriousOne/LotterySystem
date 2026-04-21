@@ -1,23 +1,18 @@
-import { useState } from "react";
+import { useMemo } from "react";
 import { useAccount, useReadContract, useWriteContract } from "wagmi";
-import { formatEther, keccak256, type Address } from "viem";
-import {
-  LOTTERY_ABI,
-  LOTTERY_CONTRACT_ADDRESS,
-  TICKET_PRICE_ETH,
-} from "@/lib/contract";
+import { formatEther, type Address } from "viem";
+import { LOTTERY_ABI, LOTTERY_CONTRACT_ADDRESS } from "@/lib/contract";
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
-const DRAWN_PHASE = 3;
-const SECRET_STORAGE_KEY = "lottery:latest-reveal-secret";
 
-type LotteryInfoTuple = readonly [
-  number | bigint,
-  bigint,
-  bigint,
-  bigint,
-  Address,
-];
+type RoundTuple = readonly [number, bigint, bigint, Address, bigint, number];
+
+const PHASE_LABELS: Record<number, string> = {
+  0: "Open",
+  1: "Calculating",
+  2: "Drawn",
+  3: "Refunding",
+};
 
 function toSafeNumber(value: bigint, fallback = 0) {
   const max = BigInt(Number.MAX_SAFE_INTEGER);
@@ -26,58 +21,83 @@ function toSafeNumber(value: bigint, fallback = 0) {
 }
 
 export function useLotteryContract() {
-  const [isRunningAdminFlow, setIsRunningAdminFlow] = useState(false);
-  const [latestRevealSecret, setLatestRevealSecret] = useState<string | null>(
-    null,
-  );
   const { address, isConnected } = useAccount();
   const isContractConfigured =
     LOTTERY_CONTRACT_ADDRESS.toLowerCase() !== ZERO_ADDRESS;
 
-  const { data: ownerData } = useReadContract({
+  const { data: currentRoundIdData } = useReadContract({
     address: LOTTERY_CONTRACT_ADDRESS,
     abi: LOTTERY_ABI,
-    functionName: "owner",
+    functionName: "currentRoundId",
     query: { enabled: isContractConfigured },
   });
 
-  const { data: prizePoolData } = useReadContract({
-    address: LOTTERY_CONTRACT_ADDRESS,
-    abi: LOTTERY_ABI,
-    functionName: "prizePool",
-    query: { enabled: isContractConfigured },
-  });
+  const currentRoundId =
+    (currentRoundIdData as bigint | undefined) ?? BigInt(0);
+  const previousRoundId =
+    currentRoundId > BigInt(0) ? currentRoundId - BigInt(1) : BigInt(0);
 
   const { data: ticketPriceData } = useReadContract({
     address: LOTTERY_CONTRACT_ADDRESS,
     abi: LOTTERY_ABI,
-    functionName: "ticketPrice",
+    functionName: "TICKET_PRICE",
     query: { enabled: isContractConfigured },
   });
 
-  const { data: lotteryInfoData } = useReadContract({
+  const { data: currentRoundData } = useReadContract({
     address: LOTTERY_CONTRACT_ADDRESS,
     abi: LOTTERY_ABI,
-    functionName: "getLotteryInfo",
+    functionName: "rounds",
+    args: [currentRoundId],
     query: { enabled: isContractConfigured },
+  });
+
+  const { data: previousRoundData } = useReadContract({
+    address: LOTTERY_CONTRACT_ADDRESS,
+    abi: LOTTERY_ABI,
+    functionName: "rounds",
+    args: [previousRoundId],
+    query: {
+      enabled: isContractConfigured && currentRoundId > BigInt(0),
+    },
+  });
+
+  const { data: upkeepData } = useReadContract({
+    address: LOTTERY_CONTRACT_ADDRESS,
+    abi: LOTTERY_ABI,
+    functionName: "checkUpkeep",
+    args: ["0x"],
+    query: { enabled: isContractConfigured },
+  });
+
+  const { data: pendingWithdrawalsData } = useReadContract({
+    address: LOTTERY_CONTRACT_ADDRESS,
+    abi: LOTTERY_ABI,
+    functionName: "pendingWithdrawals",
+    args: [address ?? ZERO_ADDRESS],
+    query: { enabled: isContractConfigured && !!address },
   });
 
   const { writeContractAsync: writeBuyTicket, isPending: isEntering } =
     useWriteContract();
-  const { writeContractAsync: writeRevealAndDraw, isPending: isDrawing } =
+  const {
+    writeContractAsync: writePerformUpkeep,
+    isPending: isPerformingUpkeep,
+  } = useWriteContract();
+  const {
+    writeContractAsync: writeEnableRefundFallback,
+    isPending: isEnablingRefundFallback,
+  } = useWriteContract();
+  const { writeContractAsync: writeClaimRefund, isPending: isClaimingRefund } =
     useWriteContract();
-  const { writeContractAsync: writeCloseSale, isPending: isClosing } =
-    useWriteContract();
-  const { writeContractAsync: writeCommitHash, isPending: isCommitting } =
-    useWriteContract();
-  const { writeContractAsync: writeClaimPrize, isPending: isClaiming } =
+  const { writeContractAsync: writeWithdrawPrize, isPending: isWithdrawing } =
     useWriteContract();
 
-  const manager = (ownerData as Address | undefined) ?? ZERO_ADDRESS;
-  const lotteryInfo = lotteryInfoData as LotteryInfoTuple | undefined;
-  const phase = Number(lotteryInfo?.[0] ?? 0);
-  const participantCount = lotteryInfo?.[2] ?? BigInt(0);
-  const participantsLength = toSafeNumber(participantCount);
+  const currentRound = currentRoundData as RoundTuple | undefined;
+  const previousRound = previousRoundData as RoundTuple | undefined;
+  const phase = Number(currentRound?.[0] ?? 0);
+  const ticketsSold = Number(currentRound?.[5] ?? 0);
+  const participantsLength = toSafeNumber(BigInt(ticketsSold));
 
   // The current UI displays players.length, so expose a sized placeholder list.
   const players = Array.from(
@@ -85,31 +105,55 @@ export function useLotteryContract() {
     (_, index) => `participant-${index + 1}`,
   );
 
-  const ticketPriceWei =
-    (ticketPriceData as bigint | undefined) ??
-    (lotteryInfo?.[1] as bigint | undefined);
+  const ticketPriceWei = (ticketPriceData as bigint | undefined) ?? BigInt(0);
 
-  const prizePoolWei =
-    (prizePoolData as bigint | undefined) ??
-    (lotteryInfo?.[3] as bigint | undefined) ??
-    BigInt(0);
-  const winningAddress =
-    (lotteryInfo?.[4] as Address | undefined) ?? ZERO_ADDRESS;
+  const prizePoolWei = (currentRound?.[2] as bigint | undefined) ?? BigInt(0);
 
-  const ticketPrice = ticketPriceWei
-    ? formatEther(ticketPriceWei)
-    : TICKET_PRICE_ETH;
+  const lastRoundWinningAddress =
+    (previousRound?.[3] as Address | undefined) ?? ZERO_ADDRESS;
+  const pendingWithdrawalsWei =
+    (pendingWithdrawalsData as bigint | undefined) ?? BigInt(0);
+  const upkeepNeeded = Boolean(
+    (upkeepData as readonly [boolean, `0x${string}`] | undefined)?.[0],
+  );
+  const phaseLabel = PHASE_LABELS[phase] ?? `Unknown (${phase})`;
+
+  const ticketPrice = ticketPriceWei ? formatEther(ticketPriceWei) : "0";
   const prizePool = formatEther(prizePoolWei);
+  const pendingWithdrawals = formatEther(pendingWithdrawalsWei);
 
-  const isManager =
-    isConnected && !!address && address.toLowerCase() === manager.toLowerCase();
-  const isDrawn = phase === DRAWN_PHASE;
+  // The extended contract has no owner-only admin gate for upkeep/fallback actions.
+  const isManager = isConnected;
+  const isDrawn = phase === 2;
   const isWinner =
     isConnected &&
     !!address &&
-    address.toLowerCase() === winningAddress.toLowerCase();
+    address.toLowerCase() === lastRoundWinningAddress.toLowerCase();
 
-  const enterLottery = async (tickets: number) => {
+  const canWithdraw = pendingWithdrawalsWei > BigInt(0);
+
+  const roundMeta = useMemo(
+    () => ({
+      currentRoundId: currentRoundId.toString(),
+      previousRoundId: previousRoundId.toString(),
+      phase,
+      phaseLabel,
+      ticketsSold,
+      lastRoundWinningAddress,
+      upkeepNeeded,
+    }),
+    [
+      currentRoundId,
+      previousRoundId,
+      phase,
+      phaseLabel,
+      ticketsSold,
+      lastRoundWinningAddress,
+      upkeepNeeded,
+    ],
+  );
+
+  const enterLottery = async (ticketIndex: number) => {
     if (!isContractConfigured) {
       throw new Error("Set LOTTERY_CONTRACT_ADDRESS in lib/contract.ts first.");
     }
@@ -120,17 +164,21 @@ export function useLotteryContract() {
       );
     }
 
-    const totalTickets = Math.max(1, tickets);
-
-    // The contract buys one ticket per call, so we submit one tx per ticket.
-    for (let i = 0; i < totalTickets; i += 1) {
-      await writeBuyTicket({
-        address: LOTTERY_CONTRACT_ADDRESS,
-        abi: LOTTERY_ABI,
-        functionName: "buyTicket",
-        value: ticketPriceWei,
-      });
+    if (
+      !Number.isInteger(ticketIndex) ||
+      ticketIndex < 0 ||
+      ticketIndex > 255
+    ) {
+      throw new Error("Ticket index must be an integer between 0 and 255.");
     }
+
+    await writeBuyTicket({
+      address: LOTTERY_CONTRACT_ADDRESS,
+      abi: LOTTERY_ABI,
+      functionName: "buyTicket",
+      args: [ticketIndex],
+      value: ticketPriceWei,
+    });
   };
 
   const pickWinnerFn = async () => {
@@ -138,42 +186,49 @@ export function useLotteryContract() {
       throw new Error("Set LOTTERY_CONTRACT_ADDRESS in lib/contract.ts first.");
     }
 
-    setIsRunningAdminFlow(true);
+    await writePerformUpkeep({
+      address: LOTTERY_CONTRACT_ADDRESS,
+      abi: LOTTERY_ABI,
+      functionName: "performUpkeep",
+      args: ["0x"],
+    });
+  };
 
-    try {
-      const randomBytes = new Uint8Array(32);
-      crypto.getRandomValues(randomBytes);
-      const secret = `0x${Array.from(randomBytes)
-        .map((value) => value.toString(16).padStart(2, "0"))
-        .join("")}` as `0x${string}`;
-
-      const hash = keccak256(secret);
-
-      localStorage.setItem(SECRET_STORAGE_KEY, secret);
-      setLatestRevealSecret(secret);
-
-      await writeCloseSale({
-        address: LOTTERY_CONTRACT_ADDRESS,
-        abi: LOTTERY_ABI,
-        functionName: "closeSale",
-      });
-
-      await writeCommitHash({
-        address: LOTTERY_CONTRACT_ADDRESS,
-        abi: LOTTERY_ABI,
-        functionName: "commitHash",
-        args: [hash],
-      });
-
-      await writeRevealAndDraw({
-        address: LOTTERY_CONTRACT_ADDRESS,
-        abi: LOTTERY_ABI,
-        functionName: "revealAndDraw",
-        args: [secret],
-      });
-    } finally {
-      setIsRunningAdminFlow(false);
+  const enableRefundFallback = async () => {
+    if (!isContractConfigured) {
+      throw new Error("Set LOTTERY_CONTRACT_ADDRESS in lib/contract.ts first.");
     }
+
+    await writeEnableRefundFallback({
+      address: LOTTERY_CONTRACT_ADDRESS,
+      abi: LOTTERY_ABI,
+      functionName: "enableRefundFallback",
+    });
+  };
+
+  const claimRefund = async (roundId: number, ticketIndex: number) => {
+    if (!isContractConfigured) {
+      throw new Error("Set LOTTERY_CONTRACT_ADDRESS in lib/contract.ts first.");
+    }
+
+    if (!Number.isInteger(roundId) || roundId < 0) {
+      throw new Error("Round ID must be a non-negative integer.");
+    }
+
+    if (
+      !Number.isInteger(ticketIndex) ||
+      ticketIndex < 0 ||
+      ticketIndex > 255
+    ) {
+      throw new Error("Ticket index must be an integer between 0 and 255.");
+    }
+
+    await writeClaimRefund({
+      address: LOTTERY_CONTRACT_ADDRESS,
+      abi: LOTTERY_ABI,
+      functionName: "claimRefund",
+      args: [BigInt(roundId), ticketIndex],
+    });
   };
 
   const claimWinnings = async () => {
@@ -181,18 +236,16 @@ export function useLotteryContract() {
       throw new Error("Set LOTTERY_CONTRACT_ADDRESS in lib/contract.ts first.");
     }
 
-    await writeClaimPrize({
+    await writeWithdrawPrize({
       address: LOTTERY_CONTRACT_ADDRESS,
       abi: LOTTERY_ABI,
-      functionName: "claimPrize",
+      functionName: "withdrawPrize",
     });
   };
 
   return {
     players,
-    manager,
     phase,
-    winningAddress,
     prizePool,
     ticketPrice,
     isManager,
@@ -200,13 +253,21 @@ export function useLotteryContract() {
     isWinner,
     isConnected,
     address,
+    roundMeta,
+    ticketsSold,
+    pendingWithdrawals,
+    canWithdraw,
+    upkeepNeeded,
     isEntering,
-    isPicking: isRunningAdminFlow || isClosing || isCommitting || isDrawing,
-    latestRevealSecret,
-    isClaiming,
+    isPicking: isPerformingUpkeep,
+    isClaiming: isWithdrawing,
+    isClaimingRefund,
+    isEnablingRefundFallback,
     isContractConfigured,
     enterLottery,
     pickWinner: pickWinnerFn,
+    claimRefund,
+    enableRefundFallback,
     claimWinnings,
   };
 }
