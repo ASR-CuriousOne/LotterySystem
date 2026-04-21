@@ -5,14 +5,14 @@ echo "Starting automated build, test, and audit sequence..."
 target_repo_dir="/workspace/LotterySystem"
 cd "$target_repo_dir"
 
+
 echo "============================="
 echo " Phase 1: Foundry Operations "
 echo "============================="
 
-if [ ! -d "lib" ]; then
-    echo "Installing missing Foundry dependencies..."
-    forge install
-fi
+git config --global --add safe.directory '*'
+
+forge install
 
 echo "Generating remappings for external tools..."
 forge remappings > remappings.txt
