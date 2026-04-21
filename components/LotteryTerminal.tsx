@@ -51,8 +51,12 @@ export function LotteryTerminal() {
     ticketPrice,
     isConnected,
     isEntering,
+    isClaiming,
     isContractConfigured,
     enterLottery,
+    isDrawn,
+    isWinner,
+    claimWinnings,
   } = useLotteryContract();
 
   const handleBuy = async () => {
@@ -72,6 +76,22 @@ export function LotteryTerminal() {
   };
 
   const totalCost = (Number(ticketPrice) * tickets).toFixed(4);
+  const canClaimPrize = isConnected && isDrawn && isWinner;
+
+  const handleClaim = async () => {
+    try {
+      await claimWinnings();
+      toast.success("Prize claim submitted!", {
+        description: "Check your wallet for confirmation.",
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Please try again.";
+      toast.error("Claim failed", {
+        description: message,
+      });
+    }
+  };
 
   return (
     <Card className="glow-strong border-border/30 bg-card/80 backdrop-blur">
@@ -115,6 +135,33 @@ export function LotteryTerminal() {
             </div>
           ) : (
             <>
+              {canClaimPrize && (
+                <div className="space-y-3 rounded-md border border-primary/30 bg-primary/5 p-3">
+                  <p className="text-center text-sm text-muted-foreground">
+                    You are the winning wallet. Claim the prize to withdraw the
+                    pool.
+                  </p>
+                  <Button
+                    onClick={handleClaim}
+                    disabled={isClaiming || !isContractConfigured}
+                    className="w-full bg-primary text-primary-foreground font-mono text-base hover:bg-primary/90 glow-primary transition-all"
+                    size="lg"
+                  >
+                    {isClaiming ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Confirm in Wallet...
+                      </>
+                    ) : (
+                      <>
+                        <Trophy className="mr-2 h-4 w-4" />
+                        Claim Prize
+                      </>
+                    )}
+                  </Button>
+                </div>
+              )}
+
               <div className="flex items-center gap-3">
                 <label className="text-sm text-muted-foreground whitespace-nowrap">
                   Tickets
