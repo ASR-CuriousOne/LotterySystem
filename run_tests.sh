@@ -73,13 +73,24 @@ find src -name "*.sol" | while read -r contract_file; do
 done
 
 echo "Running Echidna (Fuzzing)"
+
+# 1. Base Lottery
 if [ -f "test/EchidnaLottery.t.sol" ]; then
-    echo "Fuzzing test/EchidnaLottery.t.sol (Target: EchidnaLottery, Max ${TIMEOUT}s)..."
-    timeout $TIMEOUT echidna "test/EchidnaLottery.t.sol" --contract "EchidnaLottery" || true
-else
-    echo "No Echidna target found. Skipping."
+    echo "Fuzzing Base Lottery (Target: EchidnaLottery).."
+    echidna "test/EchidnaLottery.t.sol" --contract "EchidnaLottery"
 fi
 
+# 2. Lottery VRF
+if [ -f "test/EchidnaLotteryVRF.t.sol" ]; then
+    echo "Fuzzing Lottery VRF (Target: EchidnaLotteryVRF)..."
+    echidna "test/EchidnaLotteryVRF.t.sol" --contract "EchidnaLotteryVRF"
+fi
+
+# 3. Lottery EX
+if [ -f "test/EchidnaLotteryEX.t.sol" ]; then
+    echo "Fuzzing Lottery EX (Target: EchidnaLotteryEX)..."
+    echidna "test/EchidnaLotteryEX.t.sol" --contract "EchidnaLotteryEX"
+fi
 echo "Running cleanup..."
 forge clean
 rm -rf crytic-export
