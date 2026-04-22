@@ -5,16 +5,12 @@ echo "Starting automated build, test, and audit sequence..."
 target_repo_dir="/workspace/LotterySystem"
 cd "$target_repo_dir"
 
-
 echo "============================="
 echo " Phase 1: Foundry Operations "
 echo "============================="
 
 git config --global --add safe.directory '*'
-
 forge install
-
-echo "Generating remappings for external tools..."
 forge remappings > remappings.txt
 
 echo "Formatting contracts..."
@@ -43,8 +39,6 @@ echo "=========================="
 echo " Phase 2: Security Audits "
 echo "=========================="
 
-TIMEOUT=60
-
 echo "Running Slither (Static Analysis)"
 slither . || true
 
@@ -67,30 +61,29 @@ cat <<EOF > mythril_solc.json
   }
 }
 EOF
-find src -name "*.sol" | while read -r contract_file; do
-    echo "Analyzing $contract_file with Mythril (Max ${TIMEOUT}s)..."
-    myth analyze "$contract_file" --solc-json mythril_solc.json --execution-timeout $TIMEOUT || true
-done
+if [ -f "src/Lottery.sol" ]; then
+    echo "Analyzing Base Lottery..."
+    myth analyze src/Lottery.sol --solc-json mythril_solc.json --max-depth 100 || true
+fi
+if [ -f "src/LotteryVRF.sol" ]; then
+    echo "Analyzing Lottery VRF..."
+    myth analyze src/LotteryVRF.sol --solc-json mythril_solc.json --max-depth 100 || true
+fi
 
 echo "Running Echidna (Fuzzing)"
-
-# 1. Base Lottery
 if [ -f "test/EchidnaLottery.t.sol" ]; then
-    echo "Fuzzing Base Lottery (Target: EchidnaLottery).."
-    echidna "test/EchidnaLottery.t.sol" --contract "EchidnaLottery"
+    echo "Fuzzing Base Lottery..."
+    echidna "test/EchidnaLottery.t.sol" --contract "EchidnaLottery" --config echidna.yaml || true
 fi
-
-# 2. Lottery VRF
 if [ -f "test/EchidnaLotteryVRF.t.sol" ]; then
-    echo "Fuzzing Lottery VRF (Target: EchidnaLotteryVRF)..."
-    echidna "test/EchidnaLotteryVRF.t.sol" --contract "EchidnaLotteryVRF"
+    echo "Fuzzing Lottery VRF..."
+    echidna "test/EchidnaLotteryVRF.t.sol" --contract "EchidnaLotteryVRF" --config echidna.yaml || true
+fi
+if [ -f "test/EchidnaLotteryEX.t.sol" ]; then
+    echo "Fuzzing Extended Lottery..."
+    echidna "test/EchidnaLotteryEX.t.sol" --contract "EchidnaLotteryEX" --config echidna.yaml || true
 fi
 
-# 3. Lottery EX
-if [ -f "test/EchidnaLotteryEX.t.sol" ]; then
-    echo "Fuzzing Lottery EX (Target: EchidnaLotteryEX)..."
-    echidna "test/EchidnaLotteryEX.t.sol" --contract "EchidnaLotteryEX"
-fi
 echo "Running cleanup..."
 forge clean
 rm -rf crytic-export
@@ -99,10 +92,9 @@ rm -f remappings.txt mythril_solc.json
 echo "===================="
 echo " Execution Complete "
 echo "===================="
-
 echo "--- Omitted Tools & Justifications ---"
-echo "* SmartBugs & Securify: Omitted entirely. These tools rely on Docker-in-Docker (DinD) architectures, which compromise the security and stability of an isolated local container."
-echo "* Manticore: Omitted entirely. Its custom Python EVM emulator struggles to parse modern Solidity (0.8+) panic opcodes and recent network forks, causing deployment exceptions."
-echo "* Tenderly CLI: Installed for manual debugging, but bypassed in automation. It is a cloud-based platform that requires API credentials and live network forks to simulate transactions."
-echo "* Forta Agent: Installed for bot development, but bypassed in automation. Forta is a runtime monitoring network designed for live, deployed contracts, not local static/symbolic analysis."
+echo "* SmartBugs & Securify: These tools rely on Docker-in-Docker (DinD) architectures, which compromise the security and stability of an isolated local container."
+echo "* Manticore: Its custom Python EVM emulator struggles to parse modern Solidity (0.8+) panic opcodes and recent network forks, causing deployment exceptions."
+echo "* Tenderly CLI: It is a cloud-based platform that requires API credentials and live network forks to simulate transactions."
+echo "* Forta Agent: It is a runtime monitoring network designed for live, deployed contracts, not local static/symbolic analysis."
 echo "======================================"

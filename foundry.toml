@@ -5,4 +5,13 @@ libs = ["lib"]
 evm_version = "paris"
 gas_reports = ["Lottery", "LotteryVRF", "LotteryEX"]
 
+[fuzz]
+runs = 10000
+max_test_rejects = 1000000
+
+[invariant]
+runs = 10000
+depth = 500
+fail_on_revert = false
+
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options

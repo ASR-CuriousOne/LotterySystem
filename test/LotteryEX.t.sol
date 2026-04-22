@@ -184,6 +184,9 @@ contract LotteryEXTest is Test {
         for (uint16 i = 0; i < 256; i++) {
             address user = address(uint160(i + 100));
             hoax(user, TICKET_PRICE);
+
+            // casting to 'uint8' is safe because the loop strictly bounds 'i' between 0 and 255
+            // forge-lint: disable-next-line(unsafe-typecast)
             lottery.buyTicket{value: TICKET_PRICE}(uint8(i));
         }
 
