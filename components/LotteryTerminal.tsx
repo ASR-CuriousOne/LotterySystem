@@ -316,6 +316,7 @@ export function LotteryTerminal() {
               )}
             </div>
 
+            {/* Show Secret Input during Phase 1 (SaleClosed) OR Phase 2 (Committed) */}
             {(phase === 1 || phase === 2) && (
               <div className="space-y-3 pt-1">
                 <label className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
@@ -326,10 +327,12 @@ export function LotteryTerminal() {
                     type="text"
                     value={secretPhrase}
                     onChange={(e) => setSecretPhrase(e.target.value)}
-                    placeholder="Enter a secret phrase..."
+                    placeholder="Enter your secret phrase..."
                     className="font-mono text-sm bg-background/50 border-primary/30 focus-visible:ring-primary"
+                    disabled={isCommitting || isDrawing}
                   />
                   <div className="flex flex-col gap-2 sm:flex-row">
+                    {/* If Sale is Closed, we need to Commit */}
                     {phase === 1 && (
                       <Button
                         onClick={handleCommitHash}
@@ -345,19 +348,23 @@ export function LotteryTerminal() {
                         Commit Hash
                       </Button>
                     )}
-                    <Button
-                      onClick={handleRevealAndDraw}
-                      disabled={
-                        !secretPhrase || isDrawing || !isContractConfigured
-                      }
-                      size="sm"
-                      className="w-full bg-primary text-primary-foreground hover:bg-primary/90 sm:w-auto"
-                    >
-                      {isDrawing ? (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      ) : null}
-                      Reveal & Draw
-                    </Button>
+
+                    {/* If Hash is Committed, we need to Reveal & Draw */}
+                    {phase === 2 && (
+                      <Button
+                        onClick={handleRevealAndDraw}
+                        disabled={
+                          !secretPhrase || isDrawing || !isContractConfigured
+                        }
+                        size="sm"
+                        className="w-full bg-primary text-primary-foreground hover:bg-primary/90 sm:w-auto"
+                      >
+                        {isDrawing ? (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : null}
+                        Reveal & Draw
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>

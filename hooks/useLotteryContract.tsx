@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import {
   useAccount,
   useReadContract,
@@ -13,9 +12,9 @@ const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 const PHASE_LABELS: Record<number, string> = {
   0: "Open",
-  1: "Calculating",
-  2: "Drawn",
-  3: "Refunding",
+  1: "Sale Closed",
+  2: "Committed",
+  3: "Drawn",
 };
 
 export function useLotteryContract() {
