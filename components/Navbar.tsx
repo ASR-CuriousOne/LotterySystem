@@ -8,7 +8,7 @@ export default function Navbar() {
         <div className="flex items-center gap-2">
           <Gem className="h-6 w-6 text-primary" />
           <span className="font-mono text-lg font-bold tracking-tight text-foreground">
-            LOTTO<span className="text-primary">X</span>
+            Verita<span className="text-primary">S</span>
           </span>
         </div>
         <ConnectButton

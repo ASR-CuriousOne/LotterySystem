@@ -88,6 +88,7 @@ export function useLotteryContract() {
     abi: LOTTERY_ABI,
     eventName: "HashCommitted",
     onLogs() {
+      refetchLotteryInfo();
       refetchCommittedHash();
     },
   });
@@ -201,6 +202,7 @@ export function useLotteryContract() {
     });
     if (publicClient) {
       await publicClient.waitForTransactionReceipt({ hash: tx });
+      refetchLotteryInfo();
       refetchCommittedHash();
     }
   };

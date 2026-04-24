@@ -76,8 +76,8 @@ export function LotteryTerminal() {
   const handleBuy = async () => {
     try {
       await buyTicket(ticketIndex);
-      toast.success("Ticket purchased!", {
-        description: `Ticket #${ticketIndex} entered.`,
+      toast.success("Ticket bought successfully", {
+        description: `Ticket #${ticketIndex} is now entered in the draw.`,
       });
     } catch (error) {
       const message =
