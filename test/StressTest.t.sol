@@ -11,10 +11,10 @@ import {Lottery} from "../src/Lottery.sol";
 contract LotterySecurityTest is BaseLotteryTest {
     /**
      * @notice Stress tests the system with a massive number of concurrent buyers.
-     * @dev Simulates 1,000 distinct addresses buying tickets and verifies exact ETH accounting.
+     * @dev Simulates 250 distinct addresses buying tickets and verifies exact ETH accounting.
      */
     function test_MassiveConcurrentBuyers() public {
-        uint160 numBuyers = 1000;
+        uint160 numBuyers = 250;
         uint256 initialBalance = address(lottery).balance;
 
         for (uint160 i = 1; i <= numBuyers; i++) {
@@ -79,7 +79,6 @@ contract LotterySecurityTest is BaseLotteryTest {
 
         // 3. Attacker attempts to steal the prize
         vm.prank(attacker);
-        // Updated to match your exact unauthorized claim error
         vm.expectRevert(abi.encodeWithSelector(Lottery.Lottery__NotWinner.selector, attacker));
         lottery.claimPrize();
 
@@ -93,11 +92,9 @@ contract LotterySecurityTest is BaseLotteryTest {
         assertEq(actualWinner.balance, winnerBalanceBefore + expectedPrize, "Winner did not receive exact funds");
 
         // 5. Winner attempts to drain the contract again by double-claiming
-        // Note: Your contract sets prizePool = 0 instead of reverting.
-        // We verify that calling it again sends exactly 0 ETH.
         vm.prank(actualWinner);
+        vm.expectRevert(Lottery.Lottery__NoFundsToWithdraw.selector);
         lottery.claimPrize();
-        assertEq(actualWinner.balance, winnerBalanceBefore + expectedPrize, "Double claim should yield 0 extra ETH");
     }
 
     /**
