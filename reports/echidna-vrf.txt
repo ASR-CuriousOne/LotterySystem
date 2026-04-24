@@ -1,0 +1,285 @@
+[2026-04-24 14:35:45.97] Compiling test/EchidnaLotteryVRF.t.sol... Done! (3.24692021s)
+Analyzing contract: /workspace/LotterySystem/test/EchidnaLotteryVRF.t.sol:EchidnaLotteryVRF
+[2026-04-24 14:35:49.30] Running slither on test/EchidnaLotteryVRF.t.sol... Done! (0.833129584s)
+[2026-04-24 14:35:51.84] [Worker 1] New coverage: 1635 instr, 1 contracts, 1 seqs in corpus
+[2026-04-24 14:35:51.88] [Worker 6] New coverage: 1635 instr, 1 contracts, 2 seqs in corpus
+[2026-04-24 14:35:52.01] [Worker 0] New coverage: 1635 instr, 1 contracts, 3 seqs in corpus
+[2026-04-24 14:35:52.02] [Worker 3] New coverage: 1635 instr, 1 contracts, 4 seqs in corpus
+[2026-04-24 14:35:52.05] [Worker 4] New coverage: 1635 instr, 1 contracts, 5 seqs in corpus
+[2026-04-24 14:35:52.06] [Worker 5] New coverage: 1635 instr, 1 contracts, 6 seqs in corpus
+[2026-04-24 14:35:52.15] [Worker 7] New coverage: 1635 instr, 1 contracts, 7 seqs in corpus
+[2026-04-24 14:35:52.22] [Worker 2] New coverage: 1635 instr, 1 contracts, 8 seqs in corpus
+[2026-04-24 14:35:53.22] [status] tests: 0/2, fuzzing: 4126/1000000, values: [], cov: 1635, corpus: 8
+[2026-04-24 14:35:56.25] [status] tests: 0/2, fuzzing: 7847/1000000, values: [], cov: 1638, corpus: 8
+[2026-04-24 14:35:57.16] [Worker 1] New coverage: 1669 instr, 1 contracts, 9 seqs in corpus
+[2026-04-24 14:35:57.42] [Worker 3] New coverage: 1672 instr, 1 contracts, 10 seqs in corpus
+[2026-04-24 14:35:58.69] [Worker 5] New coverage: 1739 instr, 1 contracts, 11 seqs in corpus
+[2026-04-24 14:35:59.26] [status] tests: 0/2, fuzzing: 11777/1000000, values: [], cov: 1739, corpus: 11
+[2026-04-24 14:36:02.30] [status] tests: 0/2, fuzzing: 15785/1000000, values: [], cov: 1739, corpus: 11
+[2026-04-24 14:36:05.34] [status] tests: 0/2, fuzzing: 20003/1000000, values: [], cov: 1739, corpus: 11
+[2026-04-24 14:36:08.37] [status] tests: 0/2, fuzzing: 24011/1000000, values: [], cov: 1851, corpus: 11
+[2026-04-24 14:36:08.50] [Worker 3] New coverage: 1851 instr, 1 contracts, 12 seqs in corpus
+[2026-04-24 14:36:08.71] [Worker 6] New coverage: 1851 instr, 1 contracts, 13 seqs in corpus
+[2026-04-24 14:36:11.41] [status] tests: 0/2, fuzzing: 27846/1000000, values: [], cov: 1924, corpus: 13
+[2026-04-24 14:36:12.56] [Worker 3] New coverage: 1924 instr, 1 contracts, 14 seqs in corpus
+[2026-04-24 14:36:14.46] [status] tests: 0/2, fuzzing: 31854/1000000, values: [], cov: 1924, corpus: 14
+[2026-04-24 14:36:17.50] [status] tests: 0/2, fuzzing: 36053/1000000, values: [], cov: 1924, corpus: 14
+[2026-04-24 14:36:19.41] [Worker 2] New coverage: 1951 instr, 1 contracts, 15 seqs in corpus
+[2026-04-24 14:36:20.56] [status] tests: 0/2, fuzzing: 39744/1000000, values: [], cov: 2059, corpus: 15
+[2026-04-24 14:36:21.47] [Worker 4] New coverage: 2059 instr, 1 contracts, 16 seqs in corpus
+[2026-04-24 14:36:23.59] [status] tests: 0/2, fuzzing: 43752/1000000, values: [], cov: 2059, corpus: 16
+[2026-04-24 14:36:26.65] [status] tests: 0/2, fuzzing: 48406/1000000, values: [], cov: 2059, corpus: 16
+[2026-04-24 14:36:29.72] [status] tests: 0/2, fuzzing: 52611/1000000, values: [], cov: 2059, corpus: 16
+[2026-04-24 14:36:32.74] [status] tests: 0/2, fuzzing: 56619/1000000, values: [], cov: 2059, corpus: 16
+[2026-04-24 14:36:35.77] [status] tests: 0/2, fuzzing: 59625/1000000, values: [], cov: 2059, corpus: 16
+[2026-04-24 14:36:38.81] [status] tests: 0/2, fuzzing: 64780/1000000, values: [], cov: 2059, corpus: 16
+[2026-04-24 14:36:41.84] [status] tests: 0/2, fuzzing: 68700/1000000, values: [], cov: 2059, corpus: 16
+[2026-04-24 14:36:44.86] [status] tests: 0/2, fuzzing: 72147/1000000, values: [], cov: 2059, corpus: 16
+[2026-04-24 14:36:47.90] [status] tests: 0/2, fuzzing: 76297/1000000, values: [], cov: 2059, corpus: 16
+[2026-04-24 14:36:50.95] [status] tests: 0/2, fuzzing: 80959/1000000, values: [], cov: 2059, corpus: 16
+[2026-04-24 14:36:53.58] [Worker 0] New coverage: 2059 instr, 1 contracts, 17 seqs in corpus
+[2026-04-24 14:36:53.99] [status] tests: 0/2, fuzzing: 85099/1000000, values: [], cov: 2059, corpus: 17
+[2026-04-24 14:36:57.02] [status] tests: 0/2, fuzzing: 89107/1000000, values: [], cov: 2059, corpus: 17
+[2026-04-24 14:37:00.06] [status] tests: 0/2, fuzzing: 92854/1000000, values: [], cov: 2059, corpus: 17
+[2026-04-24 14:37:03.10] [status] tests: 0/2, fuzzing: 96361/1000000, values: [], cov: 2059, corpus: 17
+[2026-04-24 14:37:06.16] [status] tests: 0/2, fuzzing: 100333/1000000, values: [], cov: 2059, corpus: 17
+[2026-04-24 14:37:09.21] [status] tests: 0/2, fuzzing: 104319/1000000, values: [], cov: 2059, corpus: 17
+[2026-04-24 14:37:12.27] [status] tests: 0/2, fuzzing: 108327/1000000, values: [], cov: 2059, corpus: 17
+[2026-04-24 14:37:15.30] [status] tests: 0/2, fuzzing: 112335/1000000, values: [], cov: 2059, corpus: 17
+[2026-04-24 14:37:18.31] [status] tests: 0/2, fuzzing: 116113/1000000, values: [], cov: 2059, corpus: 17
+[2026-04-24 14:37:21.37] [status] tests: 0/2, fuzzing: 120454/1000000, values: [], cov: 2059, corpus: 17
+[2026-04-24 14:37:24.41] [status] tests: 0/2, fuzzing: 123668/1000000, values: [], cov: 2059, corpus: 17
+[2026-04-24 14:37:27.44] [status] tests: 0/2, fuzzing: 129943/1000000, values: [], cov: 2059, corpus: 17
+[2026-04-24 14:37:30.47] [status] tests: 0/2, fuzzing: 133768/1000000, values: [], cov: 2059, corpus: 17
+[2026-04-24 14:37:33.54] [status] tests: 0/2, fuzzing: 138393/1000000, values: [], cov: 2059, corpus: 17
+[2026-04-24 14:37:36.56] [status] tests: 0/2, fuzzing: 142401/1000000, values: [], cov: 2059, corpus: 17
+[2026-04-24 14:37:39.64] [status] tests: 0/2, fuzzing: 147032/1000000, values: [], cov: 2059, corpus: 17
+[2026-04-24 14:37:42.71] [status] tests: 0/2, fuzzing: 151022/1000000, values: [], cov: 2059, corpus: 17
+[2026-04-24 14:37:43.75] [Worker 6] New coverage: 2059 instr, 1 contracts, 18 seqs in corpus
+[2026-04-24 14:37:45.71] [status] tests: 0/2, fuzzing: 155030/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:37:48.76] [status] tests: 0/2, fuzzing: 158800/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:37:51.79] [status] tests: 0/2, fuzzing: 163060/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:37:54.84] [status] tests: 0/2, fuzzing: 167569/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:37:57.89] [status] tests: 0/2, fuzzing: 170905/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:38:00.94] [status] tests: 0/2, fuzzing: 174454/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:38:03.98] [status] tests: 0/2, fuzzing: 179965/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:38:07.01] [status] tests: 0/2, fuzzing: 183398/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:38:10.03] [status] tests: 0/2, fuzzing: 186808/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:38:13.08] [status] tests: 0/2, fuzzing: 191097/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:38:16.13] [status] tests: 0/2, fuzzing: 195105/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:38:19.17] [status] tests: 0/2, fuzzing: 198913/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:38:22.20] [status] tests: 0/2, fuzzing: 203350/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:38:25.22] [status] tests: 0/2, fuzzing: 207358/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:38:28.29] [status] tests: 0/2, fuzzing: 211366/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:38:31.31] [status] tests: 0/2, fuzzing: 216560/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:38:34.32] [status] tests: 0/2, fuzzing: 220067/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:38:37.34] [status] tests: 0/2, fuzzing: 224576/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:38:40.42] [status] tests: 0/2, fuzzing: 228880/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:38:43.45] [status] tests: 0/2, fuzzing: 233584/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:38:46.46] [status] tests: 0/2, fuzzing: 237592/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:38:49.50] [status] tests: 0/2, fuzzing: 241554/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:38:52.52] [status] tests: 0/2, fuzzing: 245475/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:38:55.58] [status] tests: 0/2, fuzzing: 250200/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:38:58.62] [status] tests: 0/2, fuzzing: 254709/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:39:01.68] [status] tests: 0/2, fuzzing: 258671/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:39:04.71] [status] tests: 0/2, fuzzing: 263358/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:39:07.75] [status] tests: 0/2, fuzzing: 267187/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:39:10.79] [status] tests: 0/2, fuzzing: 272049/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:39:13.84] [status] tests: 0/2, fuzzing: 275556/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:39:16.89] [status] tests: 0/2, fuzzing: 280065/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:39:19.93] [status] tests: 0/2, fuzzing: 283841/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:39:22.95] [status] tests: 0/2, fuzzing: 288013/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:39:25.97] [status] tests: 0/2, fuzzing: 291977/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:39:28.99] [status] tests: 0/2, fuzzing: 296094/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:39:32.03] [status] tests: 0/2, fuzzing: 301067/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:39:35.04] [status] tests: 0/2, fuzzing: 304462/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:39:38.09] [status] tests: 0/2, fuzzing: 309226/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:39:41.15] [status] tests: 0/2, fuzzing: 313718/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:39:44.20] [status] tests: 0/2, fuzzing: 317545/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:39:47.24] [status] tests: 0/2, fuzzing: 321521/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:39:50.29] [status] tests: 0/2, fuzzing: 326490/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:39:53.33] [status] tests: 0/2, fuzzing: 329997/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:39:56.37] [status] tests: 0/2, fuzzing: 335356/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:39:59.38] [status] tests: 0/2, fuzzing: 338354/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:40:02.42] [status] tests: 0/2, fuzzing: 342362/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:40:05.44] [status] tests: 0/2, fuzzing: 346141/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:40:08.50] [status] tests: 0/2, fuzzing: 350907/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:40:11.56] [status] tests: 0/2, fuzzing: 355094/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:40:14.61] [status] tests: 0/2, fuzzing: 358938/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:40:17.65] [status] tests: 0/2, fuzzing: 363948/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:40:20.66] [status] tests: 0/2, fuzzing: 367956/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:40:23.69] [status] tests: 0/2, fuzzing: 372143/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:40:26.70] [status] tests: 0/2, fuzzing: 376768/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:40:29.74] [status] tests: 0/2, fuzzing: 381277/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:40:32.78] [status] tests: 0/2, fuzzing: 385307/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:40:35.82] [status] tests: 0/2, fuzzing: 390364/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:40:38.83] [status] tests: 0/2, fuzzing: 393653/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:40:41.89] [status] tests: 0/2, fuzzing: 398162/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:40:44.95] [status] tests: 0/2, fuzzing: 402356/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:40:47.98] [status] tests: 0/2, fuzzing: 406865/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:40:50.99] [status] tests: 0/2, fuzzing: 411621/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:40:54.02] [status] tests: 0/2, fuzzing: 416130/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:40:57.05] [status] tests: 0/2, fuzzing: 419302/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:41:00.10] [status] tests: 0/2, fuzzing: 424007/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:41:03.15] [status] tests: 0/2, fuzzing: 428015/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:41:06.18] [status] tests: 0/2, fuzzing: 432066/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:41:09.23] [status] tests: 0/2, fuzzing: 436843/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:41:12.37] [status] tests: 0/2, fuzzing: 441352/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:41:15.41] [status] tests: 0/2, fuzzing: 445429/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:41:18.41] [status] tests: 0/2, fuzzing: 449537/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:41:21.45] [status] tests: 0/2, fuzzing: 453545/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:41:24.50] [status] tests: 0/2, fuzzing: 457941/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:41:27.55] [status] tests: 0/2, fuzzing: 461850/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:41:30.58] [status] tests: 0/2, fuzzing: 465634/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:41:33.61] [status] tests: 0/2, fuzzing: 470579/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:41:36.65] [status] tests: 0/2, fuzzing: 474989/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:41:39.67] [status] tests: 0/2, fuzzing: 479999/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:41:42.68] [status] tests: 0/2, fuzzing: 483231/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:41:45.75] [status] tests: 0/2, fuzzing: 487484/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:41:48.81] [status] tests: 0/2, fuzzing: 492236/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:41:51.84] [status] tests: 0/2, fuzzing: 496244/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:41:54.86] [status] tests: 0/2, fuzzing: 499751/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:41:57.87] [status] tests: 0/2, fuzzing: 505091/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:42:00.90] [status] tests: 0/2, fuzzing: 509084/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:42:03.93] [status] tests: 0/2, fuzzing: 512629/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:42:06.95] [status] tests: 0/2, fuzzing: 517474/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:42:09.98] [status] tests: 0/2, fuzzing: 521983/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:42:13.02] [status] tests: 0/2, fuzzing: 525991/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:42:16.06] [status] tests: 0/2, fuzzing: 529446/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:42:19.10] [status] tests: 0/2, fuzzing: 533454/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:42:22.14] [status] tests: 0/2, fuzzing: 537963/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:42:25.18] [status] tests: 0/2, fuzzing: 543421/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:42:28.22] [status] tests: 0/2, fuzzing: 547429/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:42:31.25] [status] tests: 0/2, fuzzing: 551437/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:42:34.30] [status] tests: 0/2, fuzzing: 554826/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:42:37.34] [status] tests: 0/2, fuzzing: 559335/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:42:40.37] [status] tests: 0/2, fuzzing: 563754/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:42:43.44] [status] tests: 0/2, fuzzing: 568263/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:42:46.47] [status] tests: 0/2, fuzzing: 571125/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:42:49.50] [status] tests: 0/2, fuzzing: 575133/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:42:52.54] [status] tests: 0/2, fuzzing: 579525/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:42:55.55] [status] tests: 0/2, fuzzing: 584463/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:42:58.59] [status] tests: 0/2, fuzzing: 588941/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:43:01.61] [status] tests: 0/2, fuzzing: 593132/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:43:04.65] [status] tests: 0/2, fuzzing: 597304/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:43:07.72] [status] tests: 0/2, fuzzing: 601133/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:43:10.74] [status] tests: 0/2, fuzzing: 604640/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:43:13.78] [status] tests: 0/2, fuzzing: 609650/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:43:16.82] [status] tests: 0/2, fuzzing: 614068/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:43:19.88] [status] tests: 0/2, fuzzing: 617976/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:43:22.96] [status] tests: 0/2, fuzzing: 621984/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:43:25.99] [status] tests: 0/2, fuzzing: 626460/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:43:29.03] [status] tests: 0/2, fuzzing: 630969/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:43:32.06] [status] tests: 0/2, fuzzing: 634977/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:43:35.08] [status] tests: 0/2, fuzzing: 639486/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:43:38.13] [status] tests: 0/2, fuzzing: 642993/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:43:41.16] [status] tests: 0/2, fuzzing: 646412/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:43:44.19] [status] tests: 0/2, fuzzing: 651095/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:43:47.24] [status] tests: 0/2, fuzzing: 655054/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:43:50.27] [status] tests: 0/2, fuzzing: 659156/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:43:53.33] [status] tests: 0/2, fuzzing: 663665/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:43:56.36] [status] tests: 0/2, fuzzing: 668503/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:43:59.38] [status] tests: 0/2, fuzzing: 672583/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:44:02.41] [status] tests: 0/2, fuzzing: 676656/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:44:05.45] [status] tests: 0/2, fuzzing: 680648/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:44:08.49] [status] tests: 0/2, fuzzing: 684250/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:44:11.56] [status] tests: 0/2, fuzzing: 688879/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:44:14.60] [status] tests: 0/2, fuzzing: 693388/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:44:17.62] [status] tests: 0/2, fuzzing: 697396/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:44:20.69] [status] tests: 0/2, fuzzing: 702391/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:44:23.73] [status] tests: 0/2, fuzzing: 706058/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:44:26.75] [status] tests: 0/2, fuzzing: 709967/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:44:29.83] [status] tests: 0/2, fuzzing: 713964/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:44:32.86] [status] tests: 0/2, fuzzing: 718473/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:44:35.89] [status] tests: 0/2, fuzzing: 722376/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:44:38.94] [status] tests: 0/2, fuzzing: 726885/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:44:41.98] [status] tests: 0/2, fuzzing: 731572/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:44:45.02] [status] tests: 0/2, fuzzing: 736179/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:44:48.07] [status] tests: 0/2, fuzzing: 739591/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:44:51.11] [status] tests: 0/2, fuzzing: 743599/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:44:54.14] [status] tests: 0/2, fuzzing: 748108/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:44:57.20] [status] tests: 0/2, fuzzing: 752116/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:45:00.22] [status] tests: 0/2, fuzzing: 756625/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:45:03.27] [status] tests: 0/2, fuzzing: 761134/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:45:06.30] [status] tests: 0/2, fuzzing: 764641/1000000, values: [], cov: 2059, corpus: 18
+[2026-04-24 14:45:07.59] INFO: Performing RPC: <EVM.Query: fetch contract 0x0000000000000000000000000000000000000001>
+[2026-04-24 14:45:07.59] ERROR: Requested RPC but it is not configured: <EVM.Query: fetch contract 0x0000000000000000000000000000000000000001>
+[2026-04-24 14:45:09.36] [status] tests: 0/2, fuzzing: 769635/1000000, values: [], cov: 2233, corpus: 18
+[2026-04-24 14:45:11.47] [Worker 0] New coverage: 2233 instr, 1 contracts, 19 seqs in corpus
+[2026-04-24 14:45:12.39] [status] tests: 0/2, fuzzing: 773291/1000000, values: [], cov: 2233, corpus: 19
+[2026-04-24 14:45:15.47] [status] tests: 0/2, fuzzing: 777188/1000000, values: [], cov: 2233, corpus: 19
+[2026-04-24 14:45:18.53] [status] tests: 0/2, fuzzing: 782198/1000000, values: [], cov: 2233, corpus: 19
+[2026-04-24 14:45:21.58] [status] tests: 0/2, fuzzing: 785705/1000000, values: [], cov: 2233, corpus: 19
+[2026-04-24 14:45:24.62] [status] tests: 0/2, fuzzing: 790028/1000000, values: [], cov: 2233, corpus: 19
+[2026-04-24 14:45:27.65] [status] tests: 0/2, fuzzing: 794537/1000000, values: [], cov: 2233, corpus: 19
+[2026-04-24 14:45:30.67] [status] tests: 0/2, fuzzing: 798044/1000000, values: [], cov: 2233, corpus: 19
+[2026-04-24 14:45:33.69] [status] tests: 0/2, fuzzing: 802149/1000000, values: [], cov: 2233, corpus: 19
+[2026-04-24 14:45:36.73] [status] tests: 0/2, fuzzing: 806658/1000000, values: [], cov: 2233, corpus: 19
+[2026-04-24 14:45:39.77] [status] tests: 0/2, fuzzing: 811120/1000000, values: [], cov: 2233, corpus: 19
+[2026-04-24 14:45:42.80] [status] tests: 0/2, fuzzing: 815940/1000000, values: [], cov: 2233, corpus: 19
+[2026-04-24 14:45:45.82] [status] tests: 0/2, fuzzing: 819870/1000000, values: [], cov: 2233, corpus: 19
+[2026-04-24 14:45:48.85] [status] tests: 0/2, fuzzing: 824308/1000000, values: [], cov: 2233, corpus: 19
+[2026-04-24 14:45:51.75] [Worker 6] New coverage: 2270 instr, 1 contracts, 20 seqs in corpus
+[2026-04-24 14:45:51.88] [status] tests: 0/2, fuzzing: 828041/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:45:54.92] [status] tests: 0/2, fuzzing: 832550/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:45:57.94] [status] tests: 0/2, fuzzing: 836956/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:46:01.00] [status] tests: 0/2, fuzzing: 841352/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:46:04.03] [status] tests: 0/2, fuzzing: 844859/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:46:07.09] [status] tests: 0/2, fuzzing: 849448/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:46:10.15] [status] tests: 0/2, fuzzing: 854033/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:46:13.20] [status] tests: 0/2, fuzzing: 857823/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:46:16.24] [status] tests: 0/2, fuzzing: 862332/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:46:19.26] [status] tests: 0/2, fuzzing: 867342/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:46:22.30] [status] tests: 0/2, fuzzing: 871350/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:46:25.31] [status] tests: 0/2, fuzzing: 875358/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:46:28.34] [status] tests: 0/2, fuzzing: 879867/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:46:31.38] [status] tests: 0/2, fuzzing: 884141/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:46:34.42] [status] tests: 0/2, fuzzing: 889151/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:46:37.47] [status] tests: 0/2, fuzzing: 893557/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:46:40.49] [status] tests: 0/2, fuzzing: 898066/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:46:43.51] [status] tests: 0/2, fuzzing: 901573/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:46:46.52] [status] tests: 0/2, fuzzing: 905779/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:46:49.56] [status] tests: 0/2, fuzzing: 911290/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:46:52.58] [status] tests: 0/2, fuzzing: 916245/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:46:55.63] [status] tests: 0/2, fuzzing: 920754/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:46:58.67] [status] tests: 0/2, fuzzing: 924417/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:47:01.75] [status] tests: 0/2, fuzzing: 928425/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:47:04.77] [status] tests: 0/2, fuzzing: 932732/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:47:07.80] [status] tests: 0/2, fuzzing: 937241/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:47:10.81] [status] tests: 0/2, fuzzing: 941329/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:47:13.87] [status] tests: 0/2, fuzzing: 945337/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:47:16.89] [status] tests: 0/2, fuzzing: 949846/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:47:19.94] [status] tests: 0/2, fuzzing: 954856/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:47:22.99] [status] tests: 0/2, fuzzing: 959866/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:47:26.02] [status] tests: 0/2, fuzzing: 963726/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:47:29.08] [status] tests: 0/2, fuzzing: 968235/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:47:32.09] [status] tests: 0/2, fuzzing: 972670/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:47:33.82] [Worker 2] Test limit reached. Stopping.
+[2026-04-24 14:47:34.23] [Worker 5] Test limit reached. Stopping.
+[2026-04-24 14:47:35.10] [status] tests: 0/2, fuzzing: 976666/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:47:38.12] [status] tests: 0/2, fuzzing: 981312/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:47:38.16] [Worker 7] Test limit reached. Stopping.
+[2026-04-24 14:47:39.69] [Worker 6] Test limit reached. Stopping.
+[2026-04-24 14:47:41.14] [status] tests: 0/2, fuzzing: 985106/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:47:44.14] [status] tests: 0/2, fuzzing: 988112/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:47:46.17] [Worker 0] Test limit reached. Stopping.
+[2026-04-24 14:47:47.15] [status] tests: 0/2, fuzzing: 991619/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:47:48.73] [Worker 4] Test limit reached. Stopping.
+[2026-04-24 14:47:49.84] [Worker 1] Test limit reached. Stopping.
+[2026-04-24 14:47:50.16] [status] tests: 0/2, fuzzing: 994363/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:47:53.16] [status] tests: 0/2, fuzzing: 995866/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:47:56.16] [status] tests: 0/2, fuzzing: 997172/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:47:59.17] [status] tests: 0/2, fuzzing: 998008/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:48:02.17] [status] tests: 0/2, fuzzing: 999499/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:48:05.18] [status] tests: 0/2, fuzzing: 1000715/1000000, values: [], cov: 2270, corpus: 20
+[2026-04-24 14:48:07.36] [Worker 3] Test limit reached. Stopping.
+[2026-04-24 14:48:07.36] [status] tests: 0/2, fuzzing: 1001717/1000000, values: [], cov: 2270, corpus: 20
+echidna_validPhaseBounds: passing
+echidna_balanceCoversPrizePool: passing
+
+
+Unique instructions: 2270
+Unique codehashes: 1
+Corpus size: 20
+Seed: 5026821244921087421
+

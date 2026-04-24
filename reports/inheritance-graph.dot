@@ -1,0 +1,19 @@
+digraph G {
+  graph [ ratio = "auto", page = "40" ];
+  "Lottery";
+  "Ownable";
+  "ReentrancyGuard";
+  "LotteryVRF";
+  "VRFConsumerBaseV2";
+  "LotteryEX";
+  "AutomationCompatibleInterface";
+  "Lottery" -> "Ownable";
+  "Lottery" -> "ReentrancyGuard";
+  "LotteryVRF" -> "VRFConsumerBaseV2";
+  "LotteryVRF" -> "Ownable";
+  "LotteryVRF" -> "ReentrancyGuard";
+  "LotteryEX" -> "VRFConsumerBaseV2";
+  "LotteryEX" -> "AutomationCompatibleInterface";
+  "LotteryEX" -> "ReentrancyGuard";
+}
+

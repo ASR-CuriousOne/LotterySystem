@@ -1,0 +1,145 @@
+Warning: optimizer settings and `viaIR` have been disabled for accurate coverage reports.
+If you encounter "stack too deep" errors, consider using `--ir-minimum` which enables `viaIR` with minimum optimization resolving most of the errors
+Compiling 49 files with Solc 0.8.33
+Solc 0.8.33 finished in 2.86s
+Compiler run successful!
+Analysing contracts...
+Running tests...
+
+Ran 1 test for test/HappyPath.t.sol:HappyPathTest
+[PASS] testHappyPathFullLotteryLifecycle() (gas: 272272)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 313.28ms (33.48ms CPU time)
+
+Ran 4 tests for test/RevealAndDraw.t.sol:RevealAndDrawTest
+[PASS] testRevertIfCommitHashWrongPhase() (gas: 15842)
+[PASS] testRevertIfRevealWrongSecret() (gas: 16512)
+[PASS] testRevertIfSecondRevealAndDraw() (gas: 104099)
+[PASS] testRolloverLoopInReveal() (gas: 1699809)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 324.92ms (48.29ms CPU time)
+
+Ran 1 test for test/Admin.t.sol:AdminTest
+[PASS] testRevertIfNonOwnerCallsAdminFunctions() (gas: 13480)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 312.91ms (36.56ms CPU time)
+
+Ran 10 tests for test/LotteryVRF.t.sol:LotteryVRFTest
+[PASS] testVRFDrawLifecycle() (gas: 212271)
+[PASS] test_FulfillRandomWords_WrongPhase_ReturnsEarly() (gas: 94738)
+[PASS] test_RevertIf_BuyTicketWrongPhase() (gas: 158511)
+[PASS] test_RevertIf_BuyTicketWrongPrice() (gas: 20138)
+[PASS] test_RevertIf_ClaimPrizeNotWinner() (gas: 179427)
+[PASS] test_RevertIf_ClaimPrizeWrongPhase() (gas: 18717)
+[PASS] test_RevertIf_CloseSaleNoParticipants() (gas: 16296)
+[PASS] test_RevertIf_CloseSaleNotOwner() (gas: 13626)
+[PASS] test_RevertIf_CloseSaleWrongPhase() (gas: 150240)
+[PASS] test_RevertIf_TransferFailed() (gas: 372893)
+Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 325.35ms (50.75ms CPU time)
+
+Ran 4 tests for test/AttackerBots.t.sol:AttackerBotsTest
+[PASS] testBot_GreedyReentrancyAttempt() (gas: 276504)
+[PASS] testBot_MinerBlockManipulation() (gas: 309447)
+[PASS] testBot_OwnerCanDenyServiceByWithholdingSecret() (gas: 194406)
+[PASS] testBot_OwnerCannotTamperWithCommitment() (gas: 151659)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 321.25ms (46.42ms CPU time)
+
+Ran 2 tests for test/ClaimPrize.t.sol:ClaimPrizeTest
+[PASS] testRevertIfNonWinnerClaimsPrize() (gas: 235186)
+[PASS] testWinnerCanWithdrawFromVault() (gas: 204870)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 2.26ms (1.33ms CPU time)
+
+Ran 20 tests for test/LotteryEX.t.sol:LotteryEXTest
+[PASS] test_BuyTicket_UpdatesBitmapAndPool() (gas: 127565)
+[PASS] test_CheckAndPerformUpkeep_SoldOutEarly() (gas: 9502236)
+[PASS] test_CheckUpkeep_ReturnsFalse_IfNoTicketsSold() (gas: 26532)
+[PASS] test_CheckUpkeep_ReturnsFalse_IfNotExpired() (gas: 125104)
+[PASS] test_CheckUpkeep_ReturnsFalse_IfWrongPhase() (gas: 223968)
+[PASS] test_EnableRefundFallback_And_ClaimRefund() (gas: 274046)
+[PASS] test_FulfillRandomWords_SelectsWinnerAndRestarts() (gas: 408429)
+[PASS] test_FulfillRandomWords_WrongPhase_ReturnsEarly() (gas: 33541)
+[PASS] test_PerformUpkeep_TransitionsState() (gas: 223694)
+[PASS] test_RevertIf_BuyTicketAlreadySold() (gas: 131585)
+[PASS] test_RevertIf_BuyTicketWrongPhase() (gas: 232377)
+[PASS] test_RevertIf_BuyTicketWrongPrice() (gas: 28140)
+[PASS] test_RevertIf_ClaimRefund_WrongPhase() (gas: 122516)
+[PASS] test_RevertIf_EnableRefundFallback_WrongPhase() (gas: 12867)
+[PASS] test_RevertIf_PerformUpkeep_ConditionsNotMet() (gas: 121631)
+[PASS] test_RevertIf_PerformUpkeep_NoTicketsSold() (gas: 19050)
+[PASS] test_RevertIf_PerformUpkeep_WrongPhase() (gas: 220331)
+[PASS] test_RevertIf_WithdrawPrize_NoFunds() (gas: 18699)
+[PASS] test_RevertIf_WithdrawPrize_TransferFailed() (gas: 581086)
+[PASS] test_WithdrawPrize_Success() (gas: 343330)
+Suite result: ok. 20 passed; 0 failed; 0 skipped; finished in 339.75ms (70.93ms CPU time)
+
+Ran 6 tests for test/BuyTicket.t.sol:BuyTicketTest
+[PASS] testBuySpecificTicketUpdatesBitmap() (gas: 114563)
+[PASS] testRevertIfBuySpecificTicketWrongPhase() (gas: 129779)
+[PASS] testRevertIfBuySpecificTicketWrongPrice() (gas: 36032)
+[PASS] testRevertIfBuyTicketAfterSaleClosed() (gas: 131201)
+[PASS] testRevertIfSoldOut() (gas: 15518971)
+[PASS] testRevertIfTicketAlreadySold() (gas: 121602)
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 73.56ms (73.47ms CPU time)
+
+Ran 2 tests for test/BiasTest.t.sol:RandomnessBiasTest
+[PASS] test_LastMinuteSnipeDoesNotBreakMath() (gas: 162070)
+[PASS] test_MathematicalDistributionBias() (gas: 43083137)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 602.49ms (325.85ms CPU time)
+
+Ran 7 tests for test/StressTest.t.sol:LotterySecurityTest
+[PASS] invariant_ContractBalanceNeverBreaks() (runs: 10000, calls: 5000000, reverts: 4998331)
+
+╭----------+-------------------+---------+---------+----------╮
+| Contract | Selector          | Calls   | Reverts | Discards |
++=============================================================+
+| Lottery  | buyTicket         | 1249401 | 1249401 | 0        |
+|----------+-------------------+---------+---------+----------|
+| Lottery  | claimPrize        | 624068  | 624068  | 0        |
+|----------+-------------------+---------+---------+----------|
+| Lottery  | closeSale         | 625389  | 625389  | 0        |
+|----------+-------------------+---------+---------+----------|
+| Lottery  | commitHash        | 626255  | 626255  | 0        |
+|----------+-------------------+---------+---------+----------|
+| Lottery  | renounceOwnership | 624620  | 623773  | 0        |
+|----------+-------------------+---------+---------+----------|
+| Lottery  | revealAndDraw     | 624758  | 624758  | 0        |
+|----------+-------------------+---------+---------+----------|
+| Lottery  | transferOwnership | 625509  | 624687  | 0        |
+╰----------+-------------------+---------+---------+----------╯
+
+[PASS] testFuzz_RevertIfOverpayment(uint256) (runs: 10000, μ: 20579, ~: 20579)
+[PASS] test_MassiveConcurrentBuyers() (gas: 15041179)
+[PASS] test_RevertIf_CloseSaleNoParticipants() (gas: 15842)
+[PASS] test_RevertIf_CloseSaleWrongPhase() (gas: 121612)
+[PASS] test_RevertIf_TransferFailed() (gas: 505212)
+[PASS] test_SecurePrizeClaiming() (gas: 276595)
+Suite result: ok. 7 passed; 0 failed; 0 skipped; finished in 212.53s (215.13s CPU time)
+
+Ran 10 test suites in 212.63s (215.15s CPU time): 57 tests passed, 0 failed, 0 skipped (57 total tests)
+
+╭------------------------------+------------------+------------------+-----------------+----------------╮
+| File                         | % Lines          | % Statements     | % Branches      | % Funcs        |
++=======================================================================================================+
+| script/Deploy.s.sol          | 0.00% (0/8)      | 0.00% (0/8)      | 100.00% (0/0)   | 0.00% (0/1)    |
+|------------------------------+------------------+------------------+-----------------+----------------|
+| src/Lottery.sol              | 100.00% (60/60)  | 100.00% (69/69)  | 100.00% (15/15) | 100.00% (8/8)  |
+|------------------------------+------------------+------------------+-----------------+----------------|
+| src/LotteryEX.sol            | 100.00% (78/78)  | 100.00% (95/95)  | 100.00% (11/11) | 100.00% (8/8)  |
+|------------------------------+------------------+------------------+-----------------+----------------|
+| src/LotteryVRF.sol           | 100.00% (31/31)  | 100.00% (35/35)  | 100.00% (9/9)   | 100.00% (5/5)  |
+|------------------------------+------------------+------------------+-----------------+----------------|
+| test/AttackerBots.t.sol      | 100.00% (10/10)  | 100.00% (6/6)    | 100.00% (1/1)   | 100.00% (4/4)  |
+|------------------------------+------------------+------------------+-----------------+----------------|
+| test/BaseLottery.t.sol       | 100.00% (9/9)    | 100.00% (8/8)    | 100.00% (0/0)   | 100.00% (1/1)  |
+|------------------------------+------------------+------------------+-----------------+----------------|
+| test/EchidnaLottery.t.sol    | 0.00% (0/4)      | 0.00% (0/4)      | 100.00% (0/0)   | 0.00% (0/2)    |
+|------------------------------+------------------+------------------+-----------------+----------------|
+| test/EchidnaLotteryEX.t.sol  | 0.00% (0/8)      | 0.00% (0/8)      | 100.00% (0/0)   | 0.00% (0/3)    |
+|------------------------------+------------------+------------------+-----------------+----------------|
+| test/EchidnaLotteryVRF.t.sol | 0.00% (0/4)      | 0.00% (0/4)      | 100.00% (0/0)   | 0.00% (0/2)    |
+|------------------------------+------------------+------------------+-----------------+----------------|
+| test/LotteryEX.t.sol         | 100.00% (6/6)    | 100.00% (3/3)    | 100.00% (0/0)   | 100.00% (3/3)  |
+|------------------------------+------------------+------------------+-----------------+----------------|
+| test/LotteryVRF.t.sol        | 100.00% (6/6)    | 100.00% (3/3)    | 100.00% (0/0)   | 100.00% (3/3)  |
+|------------------------------+------------------+------------------+-----------------+----------------|
+| test/StressTest.t.sol        | 100.00% (6/6)    | 100.00% (3/3)    | 100.00% (0/0)   | 100.00% (3/3)  |
+|------------------------------+------------------+------------------+-----------------+----------------|
+| Total                        | 89.57% (206/230) | 90.24% (222/246) | 100.00% (36/36) | 81.40% (35/43) |
+╰------------------------------+------------------+------------------+-----------------+----------------╯
