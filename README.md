@@ -84,8 +84,6 @@ To deploy the contract to a live network, copy the provided example environment 
 cp .env.example .env
 ```
 
-_(Never commit your actual `.env` file to version control!)_
-
 Load your environment variables and execute the deployment script, passing the variables explicitly via command-line flags:
 
 ```bash
