@@ -9,11 +9,12 @@ import {
   Users,
   Coins,
   Wallet,
-  ChevronUp,
-  ChevronDown,
+  Settings,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useLotteryContract } from "@/hooks/useLotteryContract";
+import { isTicketSold } from "@/lib/utils";
+import { stringToHex, keccak256, encodePacked } from "viem";
 
 function StatBlock({
   icon: Icon,
@@ -46,30 +47,37 @@ function StatBlock({
 
 export function LotteryTerminal() {
   const [ticketIndex, setTicketIndex] = useState(0);
-  const [refundRoundId, setRefundRoundId] = useState(0);
-  const [refundTicketIndex, setRefundTicketIndex] = useState(0);
+  const [secretPhrase, setSecretPhrase] = useState("");
+
   const {
-    players,
+    ticketsSold,
     prizePool,
     ticketPrice,
     isConnected,
     isEntering,
     isClaiming,
-    isClaimingRefund,
     canWithdraw,
     pendingWithdrawals,
-    roundMeta,
+    phase,
+    phaseLabel,
+    ticketBitmap,
+    isManager,
+    isClosing,
+    isCommitting,
+    isDrawing,
     isContractConfigured,
-    enterLottery,
-    claimRefund,
-    claimWinnings,
+    buyTicket,
+    claimPrize,
+    closeSale,
+    commitHash,
+    revealAndDraw,
   } = useLotteryContract();
 
   const handleBuy = async () => {
     try {
-      await enterLottery(ticketIndex);
+      await buyTicket(ticketIndex);
       toast.success("Ticket purchased!", {
-        description: `Ticket #${ticketIndex} entered for round ${roundMeta.currentRoundId}.`,
+        description: `Ticket #${ticketIndex} entered.`,
       });
     } catch (error) {
       const message =
@@ -82,7 +90,7 @@ export function LotteryTerminal() {
 
   const handleClaim = async () => {
     try {
-      await claimWinnings();
+      await claimPrize();
       toast.success("Withdraw submitted!", {
         description: "Your pending vault balance is being withdrawn.",
       });
@@ -95,16 +103,45 @@ export function LotteryTerminal() {
     }
   };
 
-  const handleRefundClaim = async () => {
+  const handleCloseSale = async () => {
     try {
-      await claimRefund(refundRoundId, refundTicketIndex);
-      toast.success("Refund claim submitted!", {
-        description: `Round ${refundRoundId}, ticket #${refundTicketIndex}.`,
-      });
+      await closeSale();
+      toast.success("Sale closed successfully");
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Please try again.";
-      toast.error("Refund claim failed", {
+      toast.error("Close Sale failed", {
+        description: message,
+      });
+    }
+  };
+
+  const handleCommitHash = async () => {
+    if (!secretPhrase) return;
+    try {
+      const bytes32Secret = stringToHex(secretPhrase, { size: 32 });
+      const hash = keccak256(encodePacked(["bytes32"], [bytes32Secret]));
+      await commitHash(hash);
+      toast.success("Hash committed successfully");
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Please try again.";
+      toast.error("Commit failed", {
+        description: message,
+      });
+    }
+  };
+
+  const handleRevealAndDraw = async () => {
+    if (!secretPhrase) return;
+    try {
+      const bytes32Secret = stringToHex(secretPhrase, { size: 32 });
+      await revealAndDraw(bytes32Secret);
+      toast.success("Winner drawn!");
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Please try again.";
+      toast.error("Reveal & Draw failed", {
         description: message,
       });
     }
@@ -137,12 +174,12 @@ export function LotteryTerminal() {
           <StatBlock
             icon={Users}
             label="Tickets Sold"
-            value={String(players.length)}
+            value={String(ticketsSold)}
           />
         </div>
 
-        <div className="rounded-lg border border-border/50 bg-secondary/40 p-3 text-sm text-muted-foreground">
-          Round {roundMeta.currentRoundId} • {roundMeta.phaseLabel}
+        <div className="rounded-lg border border-border/50 bg-secondary/40 p-3 text-sm text-center font-medium text-foreground">
+          Phase: {phase} • {phaseLabel}
         </div>
 
         {/* Buy Area */}
@@ -156,54 +193,56 @@ export function LotteryTerminal() {
             </div>
           ) : (
             <>
-              <div className="flex items-center gap-3">
-                <label className="text-sm text-muted-foreground whitespace-nowrap">
-                  Ticket #
-                </label>
-                <div className="relative w-full max-w-44">
-                  <Input
-                    type="number"
-                    min={0}
-                    max={255}
-                    value={ticketIndex}
-                    onChange={(e) =>
-                      setTicketIndex(
-                        Math.max(0, Math.min(255, Number(e.target.value))),
-                      )
-                    }
-                    className="font-mono bg-input border-border/50 pr-10"
-                  />
-                  <div className="absolute inset-y-1 right-1 flex w-7 flex-col overflow-hidden rounded-md border border-border/60 bg-secondary/70">
-                    <button
-                      type="button"
-                      aria-label="Increase ticket index"
-                      onClick={() =>
-                        setTicketIndex((prev) => Math.min(255, prev + 1))
-                      }
-                      className="flex flex-1 items-center justify-center text-muted-foreground transition-colors hover:bg-primary/20 hover:text-primary"
-                    >
-                      <ChevronUp className="h-3.5 w-3.5" />
-                    </button>
-                    <button
-                      type="button"
-                      aria-label="Decrease ticket index"
-                      onClick={() =>
-                        setTicketIndex((prev) => Math.max(0, prev - 1))
-                      }
-                      className="flex flex-1 items-center justify-center border-t border-border/60 text-muted-foreground transition-colors hover:bg-primary/20 hover:text-primary"
-                    >
-                      <ChevronDown className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium text-foreground whitespace-nowrap">
+                    Select a Ticket
+                  </label>
+                  <span className="font-mono text-sm text-primary whitespace-nowrap">
+                    Cost {ticketPrice} ETH
+                  </span>
                 </div>
-                <span className="font-mono text-sm text-muted-foreground whitespace-nowrap">
-                  Cost {ticketPrice} ETH
-                </span>
+                <div className="grid grid-cols-8 gap-2 max-h-[220px] overflow-y-auto p-1 scrollbar-none [&::-webkit-scrollbar]:hidden bg-background/50 rounded border border-border/30">
+                  {Array.from({ length: 256 }).map((_, index) => {
+                    const sold =
+                      ticketBitmap !== undefined
+                        ? isTicketSold(ticketBitmap, index)
+                        : false;
+                    return (
+                      <Button
+                        key={index}
+                        disabled={sold || phase !== 0}
+                        variant={
+                          ticketIndex === index
+                            ? "default"
+                            : sold
+                              ? "secondary"
+                              : "outline"
+                        }
+                        onClick={() => setTicketIndex(index)}
+                        className="font-mono text-xs w-full h-8 p-0 transition-all hover:scale-105"
+                        title={
+                          sold
+                            ? `Ticket #${index} is sold`
+                            : `Select Ticket #${index}`
+                        }
+                      >
+                        {index}
+                      </Button>
+                    );
+                  })}
+                </div>
               </div>
 
               <Button
                 onClick={handleBuy}
-                disabled={isEntering || !isContractConfigured}
+                disabled={
+                  isEntering ||
+                  !isContractConfigured ||
+                  phase !== 0 ||
+                  (ticketBitmap !== undefined &&
+                    isTicketSold(ticketBitmap, ticketIndex))
+                }
                 className="w-full bg-primary text-primary-foreground font-mono text-base hover:bg-primary/90 glow-primary transition-all"
                 size="lg"
               >
@@ -221,9 +260,11 @@ export function LotteryTerminal() {
               </Button>
 
               <div className="space-y-2 rounded-md border border-border/40 bg-secondary/20 p-3">
-                <p className="text-xs text-muted-foreground">
-                  Vault balance: {pendingWithdrawals} ETH
-                </p>
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-muted-foreground">
+                    Vault balance: {pendingWithdrawals} ETH
+                  </p>
+                </div>
                 <Button
                   onClick={handleClaim}
                   disabled={isClaiming || !isContractConfigured || !canWithdraw}
@@ -233,65 +274,96 @@ export function LotteryTerminal() {
                   {isClaiming ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Confirm in Wallet...
+                      Confirming...
                     </>
                   ) : (
                     <>
                       <Wallet className="mr-2 h-4 w-4" />
-                      Withdraw Vault Funds
+                      Claim Prize
                     </>
-                  )}
-                </Button>
-              </div>
-
-              <div className="space-y-3 rounded-md border border-border/40 bg-secondary/20 p-3">
-                <p className="text-xs text-muted-foreground">
-                  Refund fallback: claim for a voided round ticket you own.
-                </p>
-                <div className="grid grid-cols-2 gap-2">
-                  <Input
-                    type="number"
-                    min={0}
-                    value={refundRoundId}
-                    onChange={(e) =>
-                      setRefundRoundId(Math.max(0, Number(e.target.value)))
-                    }
-                    className="font-mono bg-input border-border/50"
-                    placeholder="Round ID"
-                  />
-                  <Input
-                    type="number"
-                    min={0}
-                    max={255}
-                    value={refundTicketIndex}
-                    onChange={(e) =>
-                      setRefundTicketIndex(
-                        Math.max(0, Math.min(255, Number(e.target.value))),
-                      )
-                    }
-                    className="font-mono bg-input border-border/50"
-                    placeholder="Ticket Index"
-                  />
-                </div>
-                <Button
-                  onClick={handleRefundClaim}
-                  disabled={isClaimingRefund || !isContractConfigured}
-                  variant="outline"
-                  className="w-full font-mono"
-                >
-                  {isClaimingRefund ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Confirm in Wallet...
-                    </>
-                  ) : (
-                    "Claim Refund"
                   )}
                 </Button>
               </div>
             </>
           )}
         </div>
+
+        {/* Admin Panel */}
+        {isManager && (
+          <div className="mt-6 rounded-lg border border-primary/40 bg-primary/5 p-4 space-y-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Settings className="w-5 h-5 text-primary" />
+              <h3 className="font-mono text-primary font-bold">Admin Panel</h3>
+            </div>
+
+            <div className="flex flex-col gap-2 border-b border-primary/20 pb-3 sm:flex-row sm:items-center sm:justify-between">
+              <span className="max-w-full text-sm font-medium whitespace-normal">
+                Phase: {phase} ({phaseLabel})
+              </span>
+              {phase === 0 && (
+                <Button
+                  onClick={handleCloseSale}
+                  disabled={isClosing || !isContractConfigured}
+                  size="sm"
+                  variant="secondary"
+                  className="w-full sm:w-auto"
+                >
+                  {isClosing ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : null}
+                  Close Sale
+                </Button>
+              )}
+            </div>
+
+            {(phase === 1 || phase === 2) && (
+              <div className="space-y-3 pt-1">
+                <label className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
+                  Secret Phrase
+                </label>
+                <div className="flex flex-col gap-3">
+                  <Input
+                    type="text"
+                    value={secretPhrase}
+                    onChange={(e) => setSecretPhrase(e.target.value)}
+                    placeholder="Enter a secret phrase..."
+                    className="font-mono text-sm bg-background/50 border-primary/30 focus-visible:ring-primary"
+                  />
+                  <div className="flex flex-col gap-2 sm:flex-row">
+                    {phase === 1 && (
+                      <Button
+                        onClick={handleCommitHash}
+                        disabled={
+                          !secretPhrase || isCommitting || !isContractConfigured
+                        }
+                        size="sm"
+                        className="w-full bg-primary/20 border border-primary/50 text-primary hover:bg-primary/30 sm:w-auto"
+                      >
+                        {isCommitting ? (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : null}
+                        Commit Hash
+                      </Button>
+                    )}
+                    <Button
+                      onClick={handleRevealAndDraw}
+                      disabled={
+                        !secretPhrase || isDrawing || !isContractConfigured
+                      }
+                      size="sm"
+                      className="w-full bg-primary text-primary-foreground hover:bg-primary/90 sm:w-auto"
+                    >
+                      {isDrawing ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : null}
+                      Reveal & Draw
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

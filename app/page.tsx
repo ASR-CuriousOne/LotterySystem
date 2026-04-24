@@ -22,8 +22,7 @@ export default function Home() {
               <span className="text-glow text-primary">Lottery</span>
             </h1>
             <p className="text-muted-foreground">
-              Round-based tickets, automated draw, and refund-safe vault
-              withdrawals.
+              Purchase tickets, wait for the draw, and claim your prizes easily.
             </p>
           </div>
           <LotteryTerminal />
