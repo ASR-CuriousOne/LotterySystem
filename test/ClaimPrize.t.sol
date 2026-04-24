@@ -32,4 +32,35 @@ contract ClaimPrizeTest is BaseLotteryTest {
         vm.prank(attacker);
         lottery.claimPrize();
     }
+
+    /**
+     * @notice Validates the Pull-Over-Push withdrawal pattern for the lottery winner.
+     * @dev Completes the entire lottery lifecycle and ensures funds are safely routed to the pendingWithdrawals vault before being claimed.
+     */
+    function testWinnerCanWithdrawFromVault() public {
+        // Run the state machine to completion
+        vm.prank(player1);
+        lottery.buyTicket{value: TICKET_PRICE}();
+        vm.prank(owner);
+        lottery.closeSale();
+        vm.prank(owner);
+        lottery.commitHash(committedHash);
+        vm.prank(owner);
+        lottery.revealAndDraw(SECRET);
+
+        address winner = lottery.winner();
+        uint256 expectedPrize = lottery.prizePool();
+
+        // Ensure vault is credited
+        assertEq(lottery.pendingWithdrawals(winner), expectedPrize);
+
+        uint256 balanceBefore = winner.balance;
+
+        vm.prank(winner);
+        lottery.claimPrize();
+
+        // Ensure vault is drained and wallet is credited
+        assertEq(lottery.pendingWithdrawals(winner), 0);
+        assertEq(winner.balance, balanceBefore + expectedPrize);
+    }
 }

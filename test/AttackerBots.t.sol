@@ -95,45 +95,50 @@ contract AttackerBotsTest is BaseLotteryTest {
         address minerAttacker = makeAddr("minerAttacker");
         vm.deal(minerAttacker, 1 ether);
 
+        // 1. Normal player buys Ticket 0
         vm.prank(player1);
         lottery.buyTicket{value: TICKET_PRICE}();
 
+        // 2. Miner buys Ticket 1
         vm.prank(minerAttacker);
         lottery.buyTicket{value: TICKET_PRICE}();
 
+        // 3. Owner closes the sale and commits the hash
         vm.prank(owner);
         lottery.closeSale();
 
         vm.prank(owner);
         lottery.commitHash(committedHash);
 
-        // ATTACK: The owner broadcasts `revealAndDraw(SECRET)`.
-        // The malicious miner sees the SECRET in the public mempool.
-        // The miner simulates future blocks to find which one makes them the winner.
+        // 4. MEV ATTACK: Miner simulates future blocks until it finds one where it wins
+        uint256 i = 0;
+        while (true) {
+            // Simulate the exact math from the contract
+            uint256 winningIndex = uint256(keccak256(abi.encodePacked(SECRET, block.number + i))) % 256;
+            uint256 bitmap = lottery.ticketBitmap();
 
-        uint256 currentBlock = block.number;
-        uint256 favorableBlock = currentBlock;
+            // Simulate the rollover math
+            while ((bitmap & (uint256(1) << winningIndex)) == 0) {
+                winningIndex = (winningIndex + 1) % 256;
+            }
 
-        // Miner runs this loop off-chain in their node software
-        for (uint256 i = 0; i < 20; i++) {
-            uint256 simulatedWinnerIndex = uint256(keccak256(abi.encodePacked(SECRET, currentBlock + i))) % 2;
-            if (simulatedWinnerIndex == 1) {
-                // Index 1 is the minerAttacker
-                favorableBlock = currentBlock + i;
+            // If the simulated winner is the miner, force the blockchain to this exact block!
+            // casting to 'uint8' is safe because winningIndex is strictly bounded between 0 and 255 via modulo 256 arithmetic
+            // forge-lint: disable-next-line(unsafe-typecast)
+            if (lottery.ticketOwners(uint8(winningIndex)) == minerAttacker) {
+                vm.roll(block.number + i);
                 break;
             }
+            i++;
         }
 
-        // Miner intentionally delays including the transaction until the favorable block
-        vm.roll(favorableBlock);
-
-        // Miner finally includes the owner's transaction
+        // 5. Owner blindly reveals, unknowingly falling into the miner's trap
         vm.prank(owner);
         lottery.revealAndDraw(SECRET);
 
-        // Prove the miner successfully manipulated the block outcome to win
-        assertEq(lottery.winner(), minerAttacker);
-        console2.log("MEV Attack Successful: Miner manipulated block.number to force a win at block", favorableBlock);
+        // 6. Prove the miner successfully manipulated the outcome
+        assertEq(lottery.winner(), minerAttacker, "Miner MEV Attack Failed!");
+        console2.log("MEV Attack Successful: Miner manipulated block.number to force a win");
     }
 
     /**
@@ -141,9 +146,6 @@ contract AttackerBotsTest is BaseLotteryTest {
      * @dev Forces the bot to win, then allows its fallback function to maliciously re-enter the claimPrize function.
      */
     function testBot_GreedyReentrancyAttempt() public {
-        vm.prank(player1);
-        lottery.buyTicket{value: TICKET_PRICE}();
-
         reentrancyBot.buyTicket();
 
         vm.prank(owner);
@@ -151,13 +153,7 @@ contract AttackerBotsTest is BaseLotteryTest {
 
         vm.prank(owner);
         lottery.commitHash(committedHash);
-
-        // Force the bot to win by rolling to a block that favors index 1
-        uint256 targetBlock = block.number;
-        while (uint256(keccak256(abi.encodePacked(SECRET, targetBlock))) % 2 != 1) {
-            targetBlock++;
-        }
-        vm.roll(targetBlock);
+        vm.roll(block.number + 1);
 
         vm.prank(owner);
         lottery.revealAndDraw(SECRET);
