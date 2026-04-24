@@ -1,0 +1,6 @@
+# echidna.yaml
+
+testLimit: 1000000
+seqLen: 500
+shrinkLimit: 50000
+workers: 8
