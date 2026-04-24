@@ -105,6 +105,9 @@ contract RevealAndDrawTest is BaseLotteryTest {
             )
         );
         vm.prank(owner);
+
+        // casting to 'bytes32' is safe because the string literal "newHash" is only 7 bytes, which is well below the 32-byte capacity
+        // forge-lint: disable-next-line(unsafe-typecast)
         lottery.commitHash(bytes32("newHash"));
     }
 }

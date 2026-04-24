@@ -1,0 +1,28 @@
+'forge clean' running (wd: /workspace/LotterySystem)
+'forge config --json' running
+'forge build --build-info --skip ./test/** ./script/** --force' running (wd: /workspace/LotterySystem)
+INFO:Printers:
+Compiled with Foundry
+Total number of contracts in source files: 3
+Number of contracts in dependencies: 7
+Source lines of code (SLOC) in source files: 346
+Source lines of code (SLOC) in dependencies: 202
+Number of  assembly lines: 0
+Number of optimization issues: 0
+Number of informational issues: 33
+Number of low issues: 6
+Number of medium issues: 1
+Number of high issues: 0
+
+
++------------+-------------+------+------------+--------------+-------------+
+| Name       | # functions | ERCS | ERC20 info | Complex code | Features    |
++------------+-------------+------+------------+--------------+-------------+
+| Lottery    | 23          |      |            | No           | Receive ETH |
+|            |             |      |            |              | Send ETH    |
+| LotteryEX  | 20          |      |            | No           | Receive ETH |
+|            |             |      |            |              | Send ETH    |
+| LotteryVRF | 24          |      |            | No           | Receive ETH |
+|            |             |      |            |              | Send ETH    |
++------------+-------------+------+------------+--------------+-------------+
+INFO:Slither:. analyzed (10 contracts)

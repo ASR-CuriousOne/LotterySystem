@@ -1,27 +1,27 @@
 # Veritas
 
-**Veritas** is a multi-tiered, provably fair decentralized lottery system built for the Ethereum blockchain. Moving beyond basic commit-reveal schemes, we implement autonomous, oracle-verified raffle logic using Chainlink VRF and Automation.
+> Project 4: Decentralized Lottery System
 
-> **Team Mission:** 10 SPI fr.
+**Veritas** is a multi-tiered, provably fair decentralized lottery system built for the Ethereum blockchain. Moving beyond basic commit-reveal schemes, we implement autonomous, oracle-verified raffle logic using Chainlink VRF and Automation.
 
 ## The Team
 
-| Name                       | Roll Number | Role                        |
-| :------------------------- | :---------- | :-------------------------- |
-| **Arnav Kumar**            | 240001013   | Lead Backend & Architect    |
-| **Aryaman Awanish Tiwari** | 240001014   | Stress Testing & Invariants |
-| **Ayush Singh Rana**       | 240001015   | Security Audit & Exploits   |
-| **Hrishabh Mittal**        | 240001035   | Fuzzing & Property Testing  |
-| **Prabandham Sriniketan**  | 240001052   | Statistical Analysis & Math |
-| **Yash Arya Saxena**       | 240001081   | Frontend & DApp Integration |
+| Name                       | Roll Number |
+| :------------------------- | :---------- |
+| **Arnav Kumar**            | 240001013   |
+| **Aryaman Awanish Tiwari** | 240001014   |
+| **Ayush Singh Rana**       | 240001015   |
+| **Hrishabh Mittal**        | 240001035   |
+| **Prabandham Sriniketan**  | 240001052   |
+| **Yash Arya Saxena**       | 240001081   |
 
 ## System Architecture
 
 The project is structured into three progressive iterations of lottery logic:
 
-1.  **Lottery.sol** is the baseline implementation using a **Commit-Reveal** scheme to generate pseudo-randomness without external oracles.
-2.  **LotteryVRF.sol** is an upgraded version utilizing **Chainlink VRF** to prevent miner manipulation and MEV attacks.
-3.  **LotteryEX.sol** is our **"extended"** architecture. It is fully autonomous, utilizing **Chainlink Automation (Keepers)** to trigger draws, bitmapped ticket tracking for gas efficiency, and a **Pull-Over-Push** vault for secure prize claims.
+1.  **Lottery.sol** is the main implementation using a **Commit-Reveal** scheme to satisfy strict rubric parameters. It integrates advanced **O(1) bitmapped ticket tracking** for extreme gas efficiency and a **Pull-Over-Push** vault for secure, DoS-resistant prize claims.
+2.  **LotteryVRF.sol** is an experimental upgraded version utilizing **Chainlink VRF** to prevent miner manipulation and MEV attacks.
+3.  **LotteryEX.sol** is our **"extended"** multi-round architecture. It is fully autonomous, utilizing **Chainlink Automation (Keepers)** to natively trigger draws and manage time-based refund fallbacks.
 
 ## Quick Start
 
@@ -128,15 +128,15 @@ As per the project requirements, we performed a deep gas audit using `forge test
 
 In the baseline `Lottery.sol`, the ticket price was initially a standard state variable. By refactoring this to an `immutable` type, we moved the data from contract storage directly into the contract's execution bytecode.
 
-- **Before:** `uint256 public ticketPrice;` (Required an `SLOAD` operation).
-- **After:** `uint256 public immutable ticketPrice;` (Uses a `PUSH` operation).
-- **Impact:** Saves approximately **2,097 gas** per `buyTicket` call by avoiding the **2,100 gas** cost of a cold storage read.
+- **Before:** `uint256 public ticketPrice;` (Execution Cost: **65,632 gas**)
+- **After:** `uint256 public immutable ticketPrice;` (Execution Cost: **63,535 gas**)
+- **Impact:** Saves exactly **2,097 gas** per `buyTicket` call by avoiding the 2,100 gas cost of a cold storage read (`SLOAD`). Over a fully sold-out round of 256 tickets, this simple architectural choice saves users over 536,000 gas.
 
 $$Saving \approx SLOAD(2100) - PUSH(3) = 2097 \text{ gas}$$
 
 ### Optimization 2: Bitmapped Ticket Tracking (Storage Slot Compression)
 
-In `LotteryEX.sol`, the system supports 256 tickets per round.
+In `Lottery.sol`, the system supports exactly 256 tickets per round.
 
 - **Traditional Approach:** Using a `mapping(uint256 => bool)` or a `bool[256]` array would require 256 separate storage slots, each costing **20,000 gas** for the first non-zero write.
 - **Optimization:** We utilize a single `uint256` as a **Bitmask/Bitmap**. Each of the 256 bits represents a ticket index.
@@ -151,10 +151,16 @@ We utilized Solidity 0.8.4+ custom errors instead of traditional `require` strin
 
 ## Tech Stack & Standards
 
-- **Language:** Solidity 0.8.20.
-- **Libraries:** OpenZeppelin `Ownable` and `ReentrancyGuard`.
-- **Oracle:** Chainlink VRF v2 & Chainlink Automation.
-- **Documentation:** Strict **NatSpec** compliance on all public/external functions.
-- **Frontend:** React + Ethers.js + MetaMask Integration.
+- **Language:** Solidity `0.8.20`
+- **Libraries:** OpenZeppelin `Ownable` and `ReentrancyGuard`
+- **Oracle:** Chainlink VRF v2 & Chainlink Automation
+- **Documentation:** Strict **NatSpec** compliance on all `public` / `external` functions
+- **Frontend:** Next.js, TypeScript, Wagmi + Viem for Web3, Tailwind CSS
+
+## Known Issues & Architectural Limitations
+
+- **Single-Round Lifecycle:** The `Lottery.sol` contract is intentionally designed for single-round execution to maximize gas efficiency and strictly satisfy the rubric's manual Commit-Reveal parameter. (The experimental `LotteryEX.sol` contains multi-round automation).
+- **Strict Capacity Limits:** To achieve 99.6% storage compression via a single `uint256 ticketBitmap`, the lottery is strictly capped at exactly 256 tickets per round.
+- **Residual Trust:** Because it relies on a manual Commit-Reveal scheme (per project requirements), the contract assumes the owner will not lose the secret off-chain prior to the reveal phase.
 
 **Veritas:** _Vires in Numeris_ (Strength in Numbers).
