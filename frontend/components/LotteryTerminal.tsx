@@ -14,6 +14,7 @@ import {
 import { toast } from "sonner";
 import { useLotteryContract } from "@/hooks/useLotteryContract";
 import { isTicketSold } from "@/lib/utils";
+import { getContractErrorMessage } from "@/lib/error-parser";
 import { stringToHex, keccak256, encodePacked } from "viem";
 
 function StatBlock({
@@ -80,10 +81,8 @@ export function LotteryTerminal() {
         description: `Ticket #${ticketIndex} is now entered in the draw.`,
       });
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Please try again.";
       toast.error("Transaction failed", {
-        description: message,
+        description: getContractErrorMessage(error),
       });
     }
   };
@@ -95,10 +94,8 @@ export function LotteryTerminal() {
         description: "Your pending vault balance is being withdrawn.",
       });
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Please try again.";
       toast.error("Claim failed", {
-        description: message,
+        description: getContractErrorMessage(error),
       });
     }
   };
@@ -108,10 +105,8 @@ export function LotteryTerminal() {
       await closeSale();
       toast.success("Sale closed successfully");
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Please try again.";
       toast.error("Close Sale failed", {
-        description: message,
+        description: getContractErrorMessage(error),
       });
     }
   };
@@ -124,10 +119,8 @@ export function LotteryTerminal() {
       await commitHash(hash);
       toast.success("Hash committed successfully");
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Please try again.";
       toast.error("Commit failed", {
-        description: message,
+        description: getContractErrorMessage(error),
       });
     }
   };
@@ -139,10 +132,8 @@ export function LotteryTerminal() {
       await revealAndDraw(bytes32Secret);
       toast.success("Winner drawn!");
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Please try again.";
       toast.error("Reveal & Draw failed", {
-        description: message,
+        description: getContractErrorMessage(error),
       });
     }
   };

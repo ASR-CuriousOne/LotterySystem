@@ -148,6 +148,15 @@ export function useLotteryContract() {
     isConnected && !!address && address.toLowerCase() === owner.toLowerCase();
   const canWithdraw = pendingWithdrawalsWei > BigInt(0);
 
+  const waitForSuccessfulReceipt = async (hash: `0x${string}`) => {
+    if (!publicClient) return;
+
+    const receipt = await publicClient.waitForTransactionReceipt({ hash });
+    if (receipt.status !== "success") {
+      throw new Error("Transaction reverted.");
+    }
+  };
+
   const buyTicket = async (ticketIndex: number) => {
     if (!isContractConfigured)
       throw new Error("Set LOTTERY_CONTRACT_ADDRESS in lib/contract.ts first.");
@@ -158,11 +167,9 @@ export function useLotteryContract() {
       args: [ticketIndex],
       value: ticketPriceWei,
     });
-    if (publicClient) {
-      await publicClient.waitForTransactionReceipt({ hash: tx });
-      refetchLotteryInfo();
-      refetchTicketBitmap();
-    }
+    await waitForSuccessfulReceipt(tx);
+    refetchLotteryInfo();
+    refetchTicketBitmap();
   };
 
   const claimPrize = async () => {
@@ -173,10 +180,8 @@ export function useLotteryContract() {
       abi: LOTTERY_ABI,
       functionName: "claimPrize",
     });
-    if (publicClient) {
-      await publicClient.waitForTransactionReceipt({ hash: tx });
-      refetchPendingWithdrawals();
-    }
+    await waitForSuccessfulReceipt(tx);
+    refetchPendingWithdrawals();
   };
 
   const closeSale = async () => {
@@ -186,10 +191,8 @@ export function useLotteryContract() {
       abi: LOTTERY_ABI,
       functionName: "closeSale",
     });
-    if (publicClient) {
-      await publicClient.waitForTransactionReceipt({ hash: tx });
-      refetchLotteryInfo();
-    }
+    await waitForSuccessfulReceipt(tx);
+    refetchLotteryInfo();
   };
 
   const commitHash = async (hash: `0x${string}`) => {
@@ -200,11 +203,9 @@ export function useLotteryContract() {
       functionName: "commitHash",
       args: [hash],
     });
-    if (publicClient) {
-      await publicClient.waitForTransactionReceipt({ hash: tx });
-      refetchLotteryInfo();
-      refetchCommittedHash();
-    }
+    await waitForSuccessfulReceipt(tx);
+    refetchLotteryInfo();
+    refetchCommittedHash();
   };
 
   const revealAndDraw = async (secret: `0x${string}`) => {
@@ -215,11 +216,9 @@ export function useLotteryContract() {
       functionName: "revealAndDraw",
       args: [secret],
     });
-    if (publicClient) {
-      await publicClient.waitForTransactionReceipt({ hash: tx });
-      refetchLotteryInfo();
-      refetchPendingWithdrawals();
-    }
+    await waitForSuccessfulReceipt(tx);
+    refetchLotteryInfo();
+    refetchPendingWithdrawals();
   };
 
   return {
