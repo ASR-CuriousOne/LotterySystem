@@ -6,14 +6,19 @@ digraph G {
   "LotteryVRF";
   "VRFConsumerBaseV2";
   "LotteryEX";
-  "AutomationCompatibleInterface";
+  "Initializable";
+  "UUPSUpgradeable";
+  "Ownable2StepUpgradeable";
+  "PausableUpgradeable";
   "Lottery" -> "Ownable";
   "Lottery" -> "ReentrancyGuard";
   "LotteryVRF" -> "VRFConsumerBaseV2";
   "LotteryVRF" -> "Ownable";
   "LotteryVRF" -> "ReentrancyGuard";
-  "LotteryEX" -> "VRFConsumerBaseV2";
-  "LotteryEX" -> "AutomationCompatibleInterface";
+  "LotteryEX" -> "Initializable";
+  "LotteryEX" -> "UUPSUpgradeable";
+  "LotteryEX" -> "Ownable2StepUpgradeable";
+  "LotteryEX" -> "PausableUpgradeable";
   "LotteryEX" -> "ReentrancyGuard";
 }
 

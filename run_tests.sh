@@ -18,22 +18,18 @@ echo "Formatting contracts..."
 forge fmt
 
 echo "Building contracts..."
-forge build --sizes > reports/contract-sizes.txt 2>&1
+forge build --sizes > "reports/foundry/contract-sizes.txt" 2>&1
 
 echo "Running tests and generating gas report..."
-forge test -vvv --gas-report > reports/gas-report.txt 2>&1
+forge test -vvv --gas-report > "reports/foundry/gas-report.txt" 2>&1
 
 echo "Running coverage analysis..."
-forge coverage > reports/coverage-report.txt 2>&1
+forge coverage > "reports/foundry/coverage-report.txt" 2>&1
 
 echo "Executing deployment dry-runs..."
-if [ -d "script" ]; then
-    find script -name "*.s.sol" | while read -r script_file; do
-        echo "Running script: $script_file"
-        forge script "$script_file" -vvv > "reports/deploy-script.txt" 2>&1
-    done
-else
-    echo "No script directory found. Skipping."
+if [ -f "script/Deploy.s.sol" ]; then
+    echo "Running script..."
+    forge script "script/Deploy.s.sol" -vvv > "reports/foundry/deploy-script.txt" 2>&1
 fi
 
 echo "===================================================================================="
@@ -41,35 +37,35 @@ echo "============================= Phase 2: Security Audits ===================
 echo "===================================================================================="
 
 echo "Running Slither (Static Analysis)"
-slither . --print human-summary > reports/slither-audit.txt 2>&1 || true
+slither . --print human-summary > "reports/slither/audit.txt" 2>&1 || true
 
 echo "Running Surya (Architecture & Graphs)"
 ALL_CONTRACTS=$(find src -name "*.sol")
-surya describe $ALL_CONTRACTS || true
-surya inheritance $ALL_CONTRACTS > reports/inheritance-graph.dot 2>&1 || true
+surya describe $ALL_CONTRACTS --no-color > "reports/surya/contract-description.txt" 2>&1 || true
+surya inheritance $ALL_CONTRACTS > "reports/surya/inheritance-graph.dot" 2>&1 || true
 
 echo "Running Mythril (Symbolic Execution)"
 if [ -f "src/Lottery.sol" ]; then
     echo "Analyzing Base Lottery..."
-    myth analyze src/Lottery.sol --solc-json mythril_solc.json --max-depth 100 > reports/mythril-base.txt 2>&1 || true
+    myth analyze "src/Lottery.sol" --solc-json mythril_solc.json --max-depth 100 > "reports/mythril/base.txt" 2>&1 || true
 fi
 if [ -f "src/LotteryVRF.sol" ]; then
     echo "Analyzing Lottery VRF..."
-    myth analyze src/LotteryVRF.sol --solc-json mythril_solc.json --max-depth 100 > reports/mythril-vrf.txt 2>&1 || true
+    myth analyze "src/LotteryVRF.sol" --solc-json mythril_solc.json --max-depth 100 > "reports/mythril/vrf.txt" 2>&1 || true
 fi
 
 echo "Running Echidna (Fuzzing)"
-if [ -f "test/EchidnaLottery.t.sol" ]; then
+if [ -f "test/echidna/EchidnaLottery.t.sol" ]; then
     echo "Fuzzing Base Lottery..."
-    echidna "test/EchidnaLottery.t.sol" --contract "EchidnaLottery" --config echidna.yaml --format text > reports/echidna-base.txt 2>&1 || true
+    echidna "test/echidna/EchidnaLottery.t.sol" --contract "EchidnaLottery" --config echidna.yaml --format text > "reports/echidna/base.txt" 2>&1 || true
 fi
-if [ -f "test/EchidnaLotteryVRF.t.sol" ]; then
+if [ -f "test/echidna/EchidnaLotteryVRF.t.sol" ]; then
     echo "Fuzzing Lottery VRF..."
-    echidna "test/EchidnaLotteryVRF.t.sol" --contract "EchidnaLotteryVRF" --config echidna.yaml --format text > reports/echidna-vrf.txt 2>&1 || true
+    echidna "test/echidna/EchidnaLotteryVRF.t.sol" --contract "EchidnaLotteryVRF" --config echidna.yaml --format text > "reports/echidna/vrf.txt" 2>&1 || true
 fi
-if [ -f "test/EchidnaLotteryEX.t.sol" ]; then
+if [ -f "test/echidna/EchidnaLotteryEX.t.sol" ]; then
     echo "Fuzzing Extended Lottery..."
-    echidna "test/EchidnaLotteryEX.t.sol" --contract "EchidnaLotteryEX" --config echidna.yaml --format text > reports/echidna-ex.txt 2>&1 || true
+    echidna "test/echidna/EchidnaLotteryEX.t.sol" --contract "EchidnaLotteryEX" --config echidna.yaml --format text > "reports/echidna/ex.txt" 2>&1 || true
 fi
 
 echo "Running cleanup..."

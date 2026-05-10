@@ -1,6 +1,6 @@
 No files changed, compilation skipped
 Script ran successfully.
-Gas used: 1493779
+Gas used: 1716425
 
 == Return ==
 0: contract Lottery 0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496
@@ -8,5 +8,6 @@ Gas used: 1493779
 == Logs ==
   Lottery deployed at: 0x7FA9385bE102ac3EAc297483Dd6233D62b3e1496
   Ticket Price (wei): 10000000000000000
+  Max Tickets: 100
 
 If you wish to simulate on-chain transactions pass a RPC URL.

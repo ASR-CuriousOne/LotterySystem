@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import {LotteryVRF} from "../src/LotteryVRF.sol";
+import {LotteryVRF} from "../../src/LotteryVRF.sol";
 
 contract EchidnaLotteryVRF is LotteryVRF {
     constructor() LotteryVRF(0.01 ether, address(0x1), bytes32(0), 1) {}

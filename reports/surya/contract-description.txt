@@ -1,0 +1,54 @@
+ +  Lottery (Ownable, ReentrancyGuard)
+    - [Pub] <Constructor> #
+       - modifiers: Ownable
+    - [Ext] buyTicket ($)
+    - [Ext] batchBuyTickets ($)
+    - [Ext] getTicketCount
+    - [Ext] closeSale #
+       - modifiers: onlyOwner
+    - [Ext] commitHash #
+       - modifiers: onlyOwner
+    - [Ext] revealAndDraw #
+       - modifiers: onlyOwner
+    - [Ext] claimPrize #
+       - modifiers: nonReentrant
+    - [Ext] getLotteryInfo
+
+ +  LotteryVRF (VRFConsumerBaseV2, Ownable, ReentrancyGuard)
+    - [Pub] <Constructor> #
+       - modifiers: VRFConsumerBaseV2,Ownable
+    - [Ext] buyTicket ($)
+    - [Ext] closeSaleAndDraw #
+       - modifiers: onlyOwner
+    - [Int] fulfillRandomWords #
+    - [Ext] claimPrize #
+       - modifiers: nonReentrant
+
+ +  LotteryEX (Initializable, UUPSUpgradeable, Ownable2StepUpgradeable, PausableUpgradeable, ReentrancyGuard)
+    - [Pub] <Constructor> #
+    - [Pub] initialize #
+       - modifiers: initializer
+    - [Int] _authorizeUpgrade #
+       - modifiers: onlyOwner
+    - [Ext] pause #
+       - modifiers: onlyOwner
+    - [Ext] unpause #
+       - modifiers: onlyOwner
+    - [Pub] getTicketPrice
+    - [Ext] batchBuyTickets ($)
+       - modifiers: whenNotPaused,nonReentrant
+    - [Ext] checkUpkeep
+    - [Ext] performUpkeep #
+       - modifiers: whenNotPaused
+    - [Ext] rawFulfillRandomWords #
+    - [Int] fulfillRandomWords #
+    - [Ext] withdrawPrize #
+       - modifiers: nonReentrant
+    - [Ext] enableRefundFallback #
+    - [Ext] claimRefund #
+       - modifiers: nonReentrant
+
+
+ ($) = payable function
+ # = non-constant function
+  

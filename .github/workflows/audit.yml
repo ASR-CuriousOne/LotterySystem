@@ -1,0 +1,51 @@
+name: DevSecOps & Gas Audit
+
+permissions: {}
+
+on:
+    push:
+    pull_request:
+    workflow_dispatch:
+
+env:
+    FOUNDRY_PROFILE: ci
+
+jobs:
+    security:
+        name: Security Scan, Coverage & Deploy Check
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        steps:
+            - uses: actions/checkout@v5
+              with:
+                  persist-credentials: false
+                  submodules: recursive
+
+            - name: Install Foundry
+              uses: foundry-rs/foundry-toolchain@v1
+
+            - name: Show Forge version
+              run: forge --version
+
+            - name: Generate Gas Snapshot
+              run: forge snapshot
+
+            - name: Check Gas Diff
+              run: forge snapshot --check
+              continue-on-error: true
+
+            - name: Generate Coverage Report
+              run: forge coverage --report summary
+
+            - name: Deployment Dry-Run
+              run: forge script script/Deploy.s.sol -vvv
+
+            - name: Run Slither Static Analysis
+              continue-on-error: true
+              uses: crytic/slither-action@v0.4.0
+              with:
+                  target: "./"
+                  slither-args: >
+                      --exclude-dependencies
+                      --filter-paths "test|lib|script"
