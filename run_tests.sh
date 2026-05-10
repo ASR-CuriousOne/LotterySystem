@@ -46,17 +46,21 @@ surya inheritance $ALL_CONTRACTS > "reports/surya/inheritance-graph.dot" 2>&1 ||
 
 echo "Running Mythril (Symbolic Execution)"
 if [ -f "src/Lottery.sol" ]; then
-    echo "Analyzing Base Lottery..."
+    echo "Analyzing base Lottery..."
     myth analyze "src/Lottery.sol" --solc-json mythril_solc.json --max-depth 100 > "reports/mythril/base.txt" 2>&1 || true
 fi
 if [ -f "src/LotteryVRF.sol" ]; then
     echo "Analyzing Lottery VRF..."
     myth analyze "src/LotteryVRF.sol" --solc-json mythril_solc.json --max-depth 100 > "reports/mythril/vrf.txt" 2>&1 || true
 fi
+if [ -f "src/LotteryEX.sol" ]; then
+    echo "Analyzing extended Lottery..."
+    myth analyze "src/LotteryEX.sol" --solc-json mythril_solc.json --max-depth 100 > "reports/mythril/ex.txt" 2>&1 || true
+fi
 
 echo "Running Echidna (Fuzzing)"
 if [ -f "test/echidna/EchidnaLottery.t.sol" ]; then
-    echo "Fuzzing Base Lottery..."
+    echo "Fuzzing base Lottery..."
     echidna "test/echidna/EchidnaLottery.t.sol" --contract "EchidnaLottery" --config echidna.yaml --format text > "reports/echidna/base.txt" 2>&1 || true
 fi
 if [ -f "test/echidna/EchidnaLotteryVRF.t.sol" ]; then
@@ -64,7 +68,7 @@ if [ -f "test/echidna/EchidnaLotteryVRF.t.sol" ]; then
     echidna "test/echidna/EchidnaLotteryVRF.t.sol" --contract "EchidnaLotteryVRF" --config echidna.yaml --format text > "reports/echidna/vrf.txt" 2>&1 || true
 fi
 if [ -f "test/echidna/EchidnaLotteryEX.t.sol" ]; then
-    echo "Fuzzing Extended Lottery..."
+    echo "Fuzzing extended Lottery..."
     echidna "test/echidna/EchidnaLotteryEX.t.sol" --contract "EchidnaLotteryEX" --config echidna.yaml --format text > "reports/echidna/ex.txt" 2>&1 || true
 fi
 

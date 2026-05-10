@@ -5,6 +5,9 @@ libs = ["lib"]
 evm_version = "paris"
 gas_reports = ["Lottery", "LotteryVRF", "LotteryEX"]
 
+[profile.ci]
+verbosity = 4
+
 [fuzz]
 runs = 10000
 max_test_rejects = 1000000

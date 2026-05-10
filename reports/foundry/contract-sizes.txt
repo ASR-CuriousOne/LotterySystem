@@ -1,6 +1,4 @@
-Compiling 73 files with Solc 0.8.33
-Solc 0.8.33 finished in 3.49s
-Compiler run successful!
+No files changed, compilation skipped
 
 ╭----------------------------------------+------------------+-------------------+--------------------+---------------------╮
 | Contract                               | Runtime Size (B) | Initcode Size (B) | Runtime Margin (B) | Initcode Margin (B) |

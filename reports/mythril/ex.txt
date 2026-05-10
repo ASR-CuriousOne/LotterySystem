@@ -1,0 +1,26 @@
+==== Integer Arithmetic Bugs ====
+SWC ID: 101
+Severity: High
+Contract: LotteryEX
+Function name: batchBuyTickets(uint8[])
+PC address: 2510
+Estimated Gas Usage: 57186 - 229818
+The arithmetic operator can underflow.
+It is possible to cause an integer overflow or underflow in the arithmetic operation. 
+--------------------
+In file: src/LotteryEX.sol:119
+
+len == 0
+
+--------------------
+Initial State:
+
+Account: [CREATOR], balance: 0x0, nonce:0, storage:{}
+Account: [ATTACKER], balance: 0x9, nonce:0, storage:{}
+
+Transaction Sequence:
+
+Caller: [CREATOR], calldata: , decoded_data: , value: 0x0
+Caller: [ATTACKER], function: batchBuyTickets(uint8[]), txdata: 0x6056632f0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002, decoded_data: ([0, 2],), value: 0x4
+
+

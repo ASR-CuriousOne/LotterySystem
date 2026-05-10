@@ -1,22 +1,18 @@
 No files changed, compilation skipped
 
-Ran 1 test for test/base/HappyPath.t.sol:HappyPathTest
-[PASS] testHappyPathFullLotteryLifecycle() (gas: 422966)
-Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 353.54ms (40.60ms CPU time)
-
 Ran 1 test for test/base/Admin.t.sol:AdminTest
 [PASS] testRevertIfNonOwnerCallsAdminFunctions() (gas: 275906)
-Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 353.70ms (44.24ms CPU time)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 360.68ms (40.68ms CPU time)
 
-Ran 7 tests for test/extended/VRFAndTreasury.t.sol:VRFAndTreasuryTest
-[PASS] testFulfillRandomWordsRolloverLoop() (gas: 452627)
-[PASS] testFulfillRandomWordsSplitsPoolAndRestarts() (gas: 626837)
-[PASS] testFulfillRandomWordsWrongPhaseReturnsEarly() (gas: 62887)
-[PASS] testRevertIfOnlyCoordinatorCanFulfill() (gas: 42408)
-[PASS] testRevertIfWithdrawPrizeNoFunds() (gas: 61896)
-[PASS] testRevertIfWithdrawPrizeTransferFailed() (gas: 864389)
-[PASS] testWithdrawPrize() (gas: 493132)
-Suite result: ok. 7 passed; 0 failed; 0 skipped; finished in 367.31ms (46.46ms CPU time)
+Ran 3 tests for test/extended/Refunds.t.sol:RefundsTest
+[PASS] testEnableRefundFallbackAndClaim() (gas: 556824)
+[PASS] testRevertIfClaimRefundWrongPhase() (gas: 226557)
+[PASS] testRevertIfEnableRefundFallbackWrongPhase() (gas: 39033)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 363.21ms (41.31ms CPU time)
+
+Ran 1 test for test/base/HappyPath.t.sol:HappyPathTest
+[PASS] testHappyPathFullLotteryLifecycle() (gas: 422966)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 361.60ms (40.15ms CPU time)
 
 Ran 9 tests for test/extended/KeepersAutomation.t.sol:KeepersAutomationTest
 [PASS] testCheckUpkeepReturnsFalseIfNoTickets() (gas: 20863)
@@ -28,19 +24,15 @@ Ran 9 tests for test/extended/KeepersAutomation.t.sol:KeepersAutomationTest
 [PASS] testRevertIfPerformUpkeepConditionsNotMet() (gas: 229287)
 [PASS] testRevertIfPerformUpkeepNoTicketsSold() (gas: 43185)
 [PASS] testRevertIfPerformUpkeepWrongPhase() (gas: 330806)
-Suite result: ok. 9 passed; 0 failed; 0 skipped; finished in 361.55ms (38.50ms CPU time)
+Suite result: ok. 9 passed; 0 failed; 0 skipped; finished in 368.59ms (44.53ms CPU time)
 
-Ran 3 tests for test/extended/Refunds.t.sol:RefundsTest
-[PASS] testEnableRefundFallbackAndClaim() (gas: 556824)
-[PASS] testRevertIfClaimRefundWrongPhase() (gas: 226557)
-[PASS] testRevertIfEnableRefundFallbackWrongPhase() (gas: 39033)
-Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 357.69ms (39.44ms CPU time)
-
-Ran 3 tests for test/extended/AdminAndProxy.t.sol:AdminAndProxyTest
-[PASS] testPauseAndUnpause() (gas: 327484)
-[PASS] testProxyUpgrade() (gas: 3481909)
-[PASS] testRevertIfNonOwnerUpgrades() (gas: 3467878)
-Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 366.82ms (48.98ms CPU time)
+Ran 5 tests for test/base/RevealAndDraw.t.sol:RevealAndDrawTest
+[PASS] testRevertIfCloseSaleNoParticipants() (gas: 1896968)
+[PASS] testRevertIfCloseSaleWrongPhase() (gas: 35080)
+[PASS] testRevertIfCommitHashWrongPhase() (gas: 90498)
+[PASS] testRevertIfRevealWrongPhase() (gas: 35727)
+[PASS] testRevertIfRevealWrongSecret() (gas: 92648)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 363.81ms (46.22ms CPU time)
 
 Ran 8 tests for test/extended/BatchTicketing.t.sol:BatchTicketingTest
 [PASS] testBatchBuyTickets() (gas: 254441)
@@ -51,29 +43,13 @@ Ran 8 tests for test/extended/BatchTicketing.t.sol:BatchTicketingTest
 [PASS] testRevertIfTicketAlreadySold() (gas: 247726)
 [PASS] testRevertIfZeroTickets() (gas: 62992)
 [PASS] testVipDiscountApplied() (gas: 414951)
-Suite result: ok. 8 passed; 0 failed; 0 skipped; finished in 358.30ms (34.91ms CPU time)
+Suite result: ok. 8 passed; 0 failed; 0 skipped; finished in 365.48ms (42.47ms CPU time)
 
-Ran 4 tests for test/security/AttackerBots.t.sol:AttackerBotsTest
-[PASS] testBot_GreedyReentrancyAttempt() (gas: 349164)
-[PASS] testBot_MinerBlockManipulation() (gas: 366107)
-[PASS] testBot_OwnerCanDenyServiceByWithholdingSecret() (gas: 297286)
-[PASS] testBot_OwnerCannotTamperWithCommitment() (gas: 225299)
-Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 6.45ms (5.42ms CPU time)
-
-Ran 4 tests for test/base/ClaimPrize.t.sol:ClaimPrizeTest
-[PASS] testRevertIfClaimBeforeDrawn() (gas: 1901834)
-[PASS] testRevertIfNonWinnerClaimsPrize() (gas: 42268)
-[PASS] testRevertIfPrizeAlreadyClaimed() (gas: 75453)
-[PASS] testRevertIfTransferFailed() (gas: 2376826)
-Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 6.60ms (5.62ms CPU time)
-
-Ran 5 tests for test/base/RevealAndDraw.t.sol:RevealAndDrawTest
-[PASS] testRevertIfCloseSaleNoParticipants() (gas: 1896968)
-[PASS] testRevertIfCloseSaleWrongPhase() (gas: 35080)
-[PASS] testRevertIfCommitHashWrongPhase() (gas: 90498)
-[PASS] testRevertIfRevealWrongPhase() (gas: 35727)
-[PASS] testRevertIfRevealWrongSecret() (gas: 92648)
-Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 6.74ms (5.31ms CPU time)
+Ran 3 tests for test/extended/AdminAndProxy.t.sol:AdminAndProxyTest
+[PASS] testPauseAndUnpause() (gas: 327484)
+[PASS] testProxyUpgrade() (gas: 3481909)
+[PASS] testRevertIfNonOwnerUpgrades() (gas: 3467878)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 363.17ms (42.58ms CPU time)
 
 Ran 9 tests for test/base/BuyTicket.t.sol:BuyTicketTest
 [PASS] testBatchBuyTickets() (gas: 218614)
@@ -85,7 +61,31 @@ Ran 9 tests for test/base/BuyTicket.t.sol:BuyTicketTest
 [PASS] testRevertIfBuyTicketAfterSaleClosed() (gas: 178064)
 [PASS] testRevertIfBuyTicketWrongPrice() (gas: 41731)
 [PASS] testRevertIfSoldOut() (gas: 2501960)
-Suite result: ok. 9 passed; 0 failed; 0 skipped; finished in 7.70ms (11.04ms CPU time)
+Suite result: ok. 9 passed; 0 failed; 0 skipped; finished in 2.37ms (1.49ms CPU time)
+
+Ran 4 tests for test/security/AttackerBots.t.sol:AttackerBotsTest
+[PASS] testBot_GreedyReentrancyAttempt() (gas: 349164)
+[PASS] testBot_MinerBlockManipulation() (gas: 366107)
+[PASS] testBot_OwnerCanDenyServiceByWithholdingSecret() (gas: 297286)
+[PASS] testBot_OwnerCannotTamperWithCommitment() (gas: 225299)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 3.03ms (1.34ms CPU time)
+
+Ran 4 tests for test/base/ClaimPrize.t.sol:ClaimPrizeTest
+[PASS] testRevertIfClaimBeforeDrawn() (gas: 1901834)
+[PASS] testRevertIfNonWinnerClaimsPrize() (gas: 42268)
+[PASS] testRevertIfPrizeAlreadyClaimed() (gas: 75453)
+[PASS] testRevertIfTransferFailed() (gas: 2376826)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 2.33ms (997.42µs CPU time)
+
+Ran 7 tests for test/extended/VRFAndTreasury.t.sol:VRFAndTreasuryTest
+[PASS] testFulfillRandomWordsRolloverLoop() (gas: 452627)
+[PASS] testFulfillRandomWordsSplitsPoolAndRestarts() (gas: 626837)
+[PASS] testFulfillRandomWordsWrongPhaseReturnsEarly() (gas: 62887)
+[PASS] testRevertIfOnlyCoordinatorCanFulfill() (gas: 42408)
+[PASS] testRevertIfWithdrawPrizeNoFunds() (gas: 61896)
+[PASS] testRevertIfWithdrawPrizeTransferFailed() (gas: 864389)
+[PASS] testWithdrawPrize() (gas: 493132)
+Suite result: ok. 7 passed; 0 failed; 0 skipped; finished in 4.08ms (2.10ms CPU time)
 
 Ran 10 tests for test/LotteryVRF.t.sol:LotteryVRFTest
 [PASS] testVRFDrawLifecycle() (gas: 353785)
@@ -101,40 +101,40 @@ Logs:
 [PASS] test_RevertIf_CloseSaleNotOwner() (gas: 34690)
 [PASS] test_RevertIf_CloseSaleWrongPhase() (gas: 219432)
 [PASS] test_RevertIf_TransferFailed() (gas: 564107)
-Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 12.67ms (11.72ms CPU time)
+Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 8.06ms (9.81ms CPU time)
 
 Ran 2 tests for test/security/BiasTest.t.sol:RandomnessBiasTest
 [PASS] test_LastMinuteSnipeDoesNotBreakMath() (gas: 226320)
 [PASS] test_MathematicalDistributionBias() (gas: 43078121)
-Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 251.35ms (250.65ms CPU time)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 262.34ms (261.53ms CPU time)
 
 Ran 4 tests for test/security/StressTest.t.sol:LotterySecurityTest
-[PASS] invariant_ContractBalanceNeverBreaks() (runs: 10000, calls: 5000000, reverts: 4998354)
+[PASS] invariant_ContractBalanceNeverBreaks() (runs: 10000, calls: 5000000, reverts: 4998305)
 
 ╭----------+-------------------+--------+---------+----------╮
 | Contract | Selector          | Calls  | Reverts | Discards |
 +============================================================+
-| Lottery  | batchBuyTickets   | 625398 | 625398  | 0        |
+| Lottery  | batchBuyTickets   | 624342 | 624342  | 0        |
 |----------+-------------------+--------+---------+----------|
-| Lottery  | buyTicket         | 624343 | 624343  | 0        |
+| Lottery  | buyTicket         | 624594 | 624594  | 0        |
 |----------+-------------------+--------+---------+----------|
-| Lottery  | claimPrize        | 625289 | 625289  | 0        |
+| Lottery  | claimPrize        | 625101 | 625101  | 0        |
 |----------+-------------------+--------+---------+----------|
-| Lottery  | closeSale         | 624212 | 624212  | 0        |
+| Lottery  | closeSale         | 625429 | 625429  | 0        |
 |----------+-------------------+--------+---------+----------|
-| Lottery  | commitHash        | 625818 | 625818  | 0        |
+| Lottery  | commitHash        | 624332 | 624332  | 0        |
 |----------+-------------------+--------+---------+----------|
-| Lottery  | renounceOwnership | 624707 | 623892  | 0        |
+| Lottery  | renounceOwnership | 624786 | 623941  | 0        |
 |----------+-------------------+--------+---------+----------|
-| Lottery  | revealAndDraw     | 625329 | 625329  | 0        |
+| Lottery  | revealAndDraw     | 626158 | 626158  | 0        |
 |----------+-------------------+--------+---------+----------|
-| Lottery  | transferOwnership | 624904 | 624073  | 0        |
+| Lottery  | transferOwnership | 625258 | 624408  | 0        |
 ╰----------+-------------------+--------+---------+----------╯
 
 [PASS] testFuzz_RevertIfOverpayment(uint256) (runs: 10000, μ: 40842, ~: 40842)
 [PASS] test_MassiveConcurrentBuyers() (gas: 6868398)
 [PASS] test_SecurePrizeClaiming() (gas: 453808)
-Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 166.20s (168.04s CPU time)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 192.98s (194.70s CPU time)
 
 ╭----------------------------------+-----------------+--------+--------+---------+---------╮
 | src/Lottery.sol:Lottery Contract |                 |        |        |         |         |
@@ -165,11 +165,11 @@ Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 166.20s (168.04s CP
 |----------------------------------+-----------------+--------+--------+---------+---------|
 | prizePool                        | 2540            | 2540   | 2540   | 2540    | 4       |
 |----------------------------------+-----------------+--------+--------+---------+---------|
-| renounceOwnership                | 7287            | 7287   | 7287   | 7287    | 103     |
+| renounceOwnership                | 7287            | 7287   | 7287   | 7287    | 94      |
 |----------------------------------+-----------------+--------+--------+---------+---------|
 | revealAndDraw                    | 24339           | 52052  | 60957  | 61005   | 12      |
 |----------------------------------+-----------------+--------+--------+---------+---------|
-| transferOwnership                | 4854            | 7602   | 7654   | 7654    | 108     |
+| transferOwnership                | 4854            | 7608   | 7654   | 7654    | 124     |
 |----------------------------------+-----------------+--------+--------+---------+---------|
 | winner                           | 2558            | 2558   | 2558   | 2558    | 4       |
 ╰----------------------------------+-----------------+--------+--------+---------+---------╯
@@ -241,4 +241,4 @@ Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 166.20s (168.04s CP
 ╰----------------------------------------+-----------------+-------+--------+-------+---------╯
 
 
-Ran 14 test suites in 166.38s (169.01s CPU time): 70 tests passed, 0 failed, 0 skipped (70 total tests)
+Ran 14 test suites in 193.15s (195.81s CPU time): 70 tests passed, 0 failed, 0 skipped (70 total tests)

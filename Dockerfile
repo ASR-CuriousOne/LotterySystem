@@ -23,10 +23,11 @@ RUN apt-get update && apt-get install -y \
 RUN curl -L https://foundry.paradigm.xyz | bash \
     && /root/.foundry/bin/foundryup
 
-# 3. Install solc-select
+# 3. Install solc-select and pre-fetch compilers
 RUN pip3 install solc-select \
     && solc-select install 0.8.20 \
-    && solc-select use 0.8.20
+    && solc-select install 0.8.33 \
+    && solc-select use 0.8.33
 
 # 4. Install Python-based Security Tools
 RUN pipx install slither-analyzer
