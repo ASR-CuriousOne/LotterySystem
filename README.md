@@ -1,33 +1,38 @@
 # Veritas
 
+<img width="1600" height="745" alt="image" src="https://github.com/user-attachments/assets/2e59d07f-4b10-4595-971d-eedb43fe30a4" />
+
+
 > Project 4: Decentralized Lottery System
 
-**Veritas** is a multi-tiered, provably fair decentralized lottery system built for the Ethereum blockchain. Moving beyond basic commit-reveal schemes, we implement autonomous, oracle-verified raffle logic using Chainlink VRF and Automation.
+Veritas is a multi-tiered, provably fair decentralized lottery system built for the Ethereum blockchain. Moving beyond basic commit-reveal schemes, we engineered an institutional-grade, fully audited smart contract architecture utilizing OpenZeppelin UUPS Proxies, Chainlink VRF v2.5, and Chainlink Automation (Keepers).
+
+Find the [Project Report](./reports/Project4_BitBoyz_Report.pdf) here. This is our [Demo Video](https://drive.google.com/file/d/12UijotLsn_K3qHPDedxYU01li-422RJ8/view). If the link is not accessible, the repository contains the actual [file](./demo_video.mp4) as well.
 
 ## The Team
 
-| Name                       | Roll Number |
-| :------------------------- | :---------- |
-| **Arnav Kumar**            | 240001013   |
-| **Aryaman Awanish Tiwari** | 240001014   |
-| **Ayush Singh Rana**       | 240001015   |
-| **Hrishabh Mittal**        | 240001035   |
-| **Prabandham Sriniketan**  | 240001052   |
-| **Yash Arya Saxena**       | 240001081   |
+| Name                   | Roll Number |
+| :--------------------- | :---------- |
+| Arnav Kumar            | 240001013   |
+| Aryaman Awanish Tiwari | 240001014   |
+| Ayush Singh Rana       | 240001015   |
+| Hrishabh Mittal        | 240001035   |
+| Prabandham Sriniketan  | 240001052   |
+| Yash Arya Saxena       | 240001081   |
 
 ## System Architecture
 
 The project is structured into three progressive iterations of lottery logic:
 
-1.  **Lottery.sol** is the main implementation using a **Commit-Reveal** scheme to satisfy strict rubric parameters. It integrates advanced **O(1) bitmapped ticket tracking** for extreme gas efficiency and a **Pull-Over-Push** vault for secure, DoS-resistant prize claims.
-2.  **LotteryVRF.sol** is an experimental upgraded version utilizing **Chainlink VRF** to prevent miner manipulation and MEV attacks.
-3.  **LotteryEX.sol** is our **"extended"** multi-round architecture. It is fully autonomous, utilizing **Chainlink Automation (Keepers)** to natively trigger draws and manage time-based refund fallbacks.
+1.  Lottery.sol (Base): The baseline implementation using a manual Commit-Reveal scheme to satisfy strict rubric parameters. It utilizes dynamic arrays and string-based reverts to establish a gas-cost baseline.
+2.  LotteryVRF.sol (Intermediate): An experimental upgraded version utilizing Chainlink VRF to prevent miner manipulation and MEV attacks.
+3.  LotteryEX.sol (Enterprise): Our flagship "extended" multi-round architecture. It is fully autonomous, utilizing Chainlink Automation (Keepers) to natively trigger draws and manage time-based refund fallbacks. It is structured behind an ERC1967 UUPS Proxy for upgradeability.
 
 ## Quick Start
 
 ### Prerequisites
 
-- [Foundry](https://www.google.com/search?q=https://book.getfoundry.sh/getting-started/installation) installed.
+- [Foundry](https://book.getfoundry.sh/getting-started/installation) installed.
 
 ### Setup & Compilation
 
@@ -43,18 +48,18 @@ forge install
 forge build
 ```
 
-### Running Tests
+### Testing & Coverage
 
-We maintain **100% Branch and Statement Coverage** across all core contracts.
+We maintain full line, branch, and function coverage across all contracts (Lottery.sol, LotteryVRF.sol, LotteryEX.sol).
 
 ```bash
-# Run the complete test suite
+# Run the test suites
 forge test
 
-# Generate a gas report
+# Generate the gas report
 forge test --gas-report
 
-# View coverage details
+# View the coverage report
 forge coverage
 ```
 
@@ -68,9 +73,7 @@ To test the deployment and integrations locally, spin up a local Foundry node:
 anvil
 ```
 
-Note any of the private keys displayed.
-
-In a separate terminal, deploy the contracts using one of these pre-funded default private keys:
+Note any of the private keys displayed in the terminal. In a separate terminal, deploy the contracts using one of those pre-funded default private keys:
 
 ```bash
 forge script script/Deploy.s.sol:Deploy --rpc-url http://localhost:8545 --private-key <YOUR_PRIVATE_KEY> --broadcast
@@ -78,7 +81,7 @@ forge script script/Deploy.s.sol:Deploy --rpc-url http://localhost:8545 --privat
 
 ### Live Deployment (Sepolia Testnet)
 
-To deploy the contract to a live network, copy the provided example environment file and insert your own API and wallet keys:
+To deploy the contract to a live network and verify the source code, copy the provided example environment file and insert your own API and wallet keys:
 
 ```bash
 cp .env.example .env
@@ -91,23 +94,56 @@ source .env
 forge script script/Deploy.s.sol:Deploy --rpc-url $SEPOLIA_RPC_URL --private-key $PRIVATE_KEY --broadcast --verify --etherscan-api-key $ETHERSCAN_API_KEY
 ```
 
-## Live Deployment & Frontend
+## Gas Optimizations & EVM Architecture
 
-- **Frontend DApp:** [Insert Vercel/Netlify Link Here]
-- [**Verified Contract (Sepolia)**](https://sepolia.etherscan.io/address/0x15f294cbd5e23f3e47b3d255c0ea13e9a2c771e0)
+By comparing Lottery.sol to LotteryEX.sol, we successfully implemented and benchmarked the following EVM optimizations. All metrics are derived from Foundry median execution costs simulating a 256-ticket round.
+
+### 1. Storage Compression
+
+- The Vulnerability: Lottery.sol pushes addresses to a dynamic array, requiring an SSTORE operation for both the data and the array length (costing 20,000+ gas per ticket).
+- The Optimization: LotteryEX.sol utilizes a bitmapped storage pattern using a single uint256 integer. When a user buys a ticket, a bitwise OR operation flips a specific bit, locking the data footprint to a single 32-byte slot regardless of how many tickets are sold.
+
+### 2. Immutable State Variables
+
+- The Optimization: Refactoring `ticketPrice` to an immutable variable in the base contract embeds the value directly into the bytecode. This replaces an expensive SLOAD operation (100 gas) with a highly efficient PUSH operation (3 gas).
+- Net Savings: Saves ~2,000 gas per transaction, preventing over 512,000 gas in overhead across a fully sold-out round.
+
+### 3. EVM Struct Packing
+
+- The Optimization: We packed the `Round` struct in LotteryEX.sol to fit perfectly into exactly two 32-byte EVM slots (Slot 0 for the 32-byte bitmap, Slot 1 combining `address winner`, `uint16 ticketsSold`, and `Phase phase`).
+- Impact: Updating the ticket count and phase simultaneously now costs a single SSTORE execution instead of two.
+
+### 4. Custom Errors
+
+- The Vulnerability: Standard `require(condition, "String message")` statements bloat contract bytecode by storing long ASCII strings.
+- The Optimization: Upgrading to Solidity 0.8.4+ custom errors encodes failures as 4-byte ABI selectors. Despite adding Keepers, VRF v2.5, proxies, and treasury routing, custom errors kept LotteryEX.sol strictly below the 24.5 KB EIP-170 limit (deployed at 15.8 KB).
+
+### 5. Memory Caching
+
+- The Optimization: When emitting events (`WinnerDrawn`), referencing state variables directly forces an SLOAD. We cache heavy variables into local memory before processing math or emitting events, bypassing storage reads entirely.
+
+### 6. The "Fail-Fast" Keeper Architecture
+
+- The Optimization: `checkUpkeep()` evaluates the cheapest and most restrictive condition first (`currentPhase != Phase.Open`). Because the phase is packed into the heavily-accessed Slot 1, it instantly aborts invalid checks, saving the Keeper network from simulating heavier block timestamp logic and lowering operational costs.
 
 ## Security Audit Pipeline
 
-To ensure academic and professional rigor, we have containerized our entire security toolchain. This allows for a reproducible, military-grade audit of our codebase.
+To ensure professional rigor, our repository utilizes a fully containerized DevSecOps security toolchain.
 
-### Tools Included
+### Tools Deployed
 
-- **Slither:** Static Analysis for reentrancy and vulnerability patterns.
-- **Mythril:** Symbolic execution for deep EVM branch analysis.
-- **Echidna:** Property-based fuzzing.
-- **Surya:** Visual architecture and inheritance graphing.
+- Slither: Static analysis for reentrancy and syntax vulnerability patterns.
+- Mythril: Symbolic execution for deep EVM branch analysis.
+- Echidna: Property-based fuzzing and invariant testing.
+- Surya: Visual architecture graphing.
 
-### Run the Audit
+### Audit Results
+
+- Foundry Invariants: Executed 10,000 runs resulting in over 4.9 million reverted state mutations, proving our checks-effects-interactions (CEI) implementations safely prevent pool draining.
+- Echidna Fuzzing: Executed 3,000,000+ total sequences (1M each for Base, VRF, and EX). The fuzzer reached over 5,000 unique EVM instructions in LotteryEX, failing to break the 256-ticket hard cap, hijack round IDs, or breach phase enum boundaries.
+- Static Analysis: All Mythril and Slither output logs have been verified. Mythril SWC-101 in LotteryEX and SWC-107 in LotteryVRF were audited and confirmed as false-positives resulting from 0.8.x comparison-reverts and official Chainlink Oracle callback routing.
+
+### Run the Local Audit
 
 ```bash
 # Build the auditor image
@@ -118,47 +154,12 @@ docker create -it --name tester -v "$(pwd):/workspace/LotterySystem" auditor
 docker start -ai tester
 ```
 
-## Gas Optimization
-
-As per the project requirements, we performed a deep gas audit using `forge test --gas-report` and also noted the suggestions given by `forge build --sizes` to identify and mitigate high-cost operations.
-
-### Optimization 1: `immutable` Constants (Storage Read Bypass)
-
-In the baseline `Lottery.sol`, the ticket price was initially a standard state variable. By refactoring this to an `immutable` type, we moved the data from contract storage directly into the contract's execution bytecode.
-
-- **Before:** `uint256 public ticketPrice;` (Execution Cost: **65,632 gas**)
-- **After:** `uint256 public immutable ticketPrice;` (Execution Cost: **63,535 gas**)
-- **Impact:** Saves exactly **2,097 gas** per `buyTicket` call by avoiding the 2,100 gas cost of a cold storage read (`SLOAD`). Over a fully sold-out round of 256 tickets, this simple architectural choice saves users over 536,000 gas.
-
-$$Saving \approx SLOAD(2100) - PUSH(3) = 2097 \text{ gas}$$
-
-### Optimization 2: Bitmapped Ticket Tracking (Storage Slot Compression)
-
-In `Lottery.sol`, the system supports exactly 256 tickets per round.
-
-- **Traditional Approach:** Using a `mapping(uint256 => bool)` or a `bool[256]` array would require 256 separate storage slots, each costing **20,000 gas** for the first non-zero write.
-- **Optimization:** We utilize a single `uint256` as a **Bitmask/Bitmap**. Each of the 256 bits represents a ticket index.
-- **Impact:** This compresses the entire ticket-tracking state machine into **1 storage slot** ($1 \times 256$ bits), reducing the overall storage footprint by **99.6%** for round tracking.
-
-### Optimization 3: Custom Errors (Bytecode Efficiency)
-
-We utilized Solidity 0.8.4+ custom errors instead of traditional `require` strings.
-
-- **Technical Reason:** Traditional revert strings (e.g., `require(condition, "Only the winner can claim")`) store long ASCII strings in the contract bytecode, increasing deployment and execution costs.
-- **Impact:** Custom errors (e.g., `revert Lottery__NotWinner()`) use a 4-byte selector, significantly reducing the gas cost of failing transactions and overall deployment size.
-
 ## Tech Stack & Standards
 
-- **Language:** Solidity `0.8.20`
-- **Libraries:** OpenZeppelin `Ownable` and `ReentrancyGuard`
-- **Oracle:** Chainlink VRF v2 & Chainlink Automation
-- **Documentation:** Strict **NatSpec** compliance on all `public` / `external` functions
-- **Frontend:** Next.js, TypeScript, Wagmi + Viem for Web3, Tailwind CSS
+- Language: Solidity 0.8.20 & 0.8.22 (UUPS constraints)
+- Architecture: OpenZeppelin Ownable2Step, ReentrancyGuard, ERC1967Proxy, UUPSUpgradeable
+- Oracles: Chainlink VRF v2.5 & Chainlink Automation (Keepers)
+- Documentation: Strict NatSpec compliance
+- Frontend: Next.js, TypeScript, Wagmi + Viem for Web3, Tailwind CSS
 
-## Known Issues & Architectural Limitations
-
-- **Single-Round Lifecycle:** The `Lottery.sol` contract is intentionally designed for single-round execution to maximize gas efficiency and strictly satisfy the rubric's manual Commit-Reveal parameter. (The experimental `LotteryEX.sol` contains multi-round automation).
-- **Strict Capacity Limits:** To achieve 99.6% storage compression via a single `uint256 ticketBitmap`, the lottery is strictly capped at exactly 256 tickets per round.
-- **Residual Trust:** Because it relies on a manual Commit-Reveal scheme (per project requirements), the contract assumes the owner will not lose the secret off-chain prior to the reveal phase.
-
-**Veritas:** _Vires in Numeris_ (Strength in Numbers).
+Veritas: _Vires in Numeris_ (Strength in Numbers).

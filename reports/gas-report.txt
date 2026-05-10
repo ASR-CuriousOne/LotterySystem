@@ -1,0 +1,244 @@
+No files changed, compilation skipped
+
+Ran 1 test for test/base/Admin.t.sol:AdminTest
+[PASS] testRevertIfNonOwnerCallsAdminFunctions() (gas: 275906)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 360.68ms (40.68ms CPU time)
+
+Ran 3 tests for test/extended/Refunds.t.sol:RefundsTest
+[PASS] testEnableRefundFallbackAndClaim() (gas: 556824)
+[PASS] testRevertIfClaimRefundWrongPhase() (gas: 226557)
+[PASS] testRevertIfEnableRefundFallbackWrongPhase() (gas: 39033)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 363.21ms (41.31ms CPU time)
+
+Ran 1 test for test/base/HappyPath.t.sol:HappyPathTest
+[PASS] testHappyPathFullLotteryLifecycle() (gas: 422966)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 361.60ms (40.15ms CPU time)
+
+Ran 9 tests for test/extended/KeepersAutomation.t.sol:KeepersAutomationTest
+[PASS] testCheckUpkeepReturnsFalseIfNoTickets() (gas: 20863)
+[PASS] testCheckUpkeepReturnsFalseIfNotExpired() (gas: 207062)
+[PASS] testCheckUpkeepReturnsFalseIfWrongPhase() (gas: 308280)
+[PASS] testCheckUpkeepReturnsTrueWhenSoldOut() (gas: 6186280)
+[PASS] testPerformUpkeepSoldOutEarly() (gas: 6291521)
+[PASS] testPerformUpkeepTransitionsState() (gas: 313175)
+[PASS] testRevertIfPerformUpkeepConditionsNotMet() (gas: 229287)
+[PASS] testRevertIfPerformUpkeepNoTicketsSold() (gas: 43185)
+[PASS] testRevertIfPerformUpkeepWrongPhase() (gas: 330806)
+Suite result: ok. 9 passed; 0 failed; 0 skipped; finished in 368.59ms (44.53ms CPU time)
+
+Ran 5 tests for test/base/RevealAndDraw.t.sol:RevealAndDrawTest
+[PASS] testRevertIfCloseSaleNoParticipants() (gas: 1896968)
+[PASS] testRevertIfCloseSaleWrongPhase() (gas: 35080)
+[PASS] testRevertIfCommitHashWrongPhase() (gas: 90498)
+[PASS] testRevertIfRevealWrongPhase() (gas: 35727)
+[PASS] testRevertIfRevealWrongSecret() (gas: 92648)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 363.81ms (46.22ms CPU time)
+
+Ran 8 tests for test/extended/BatchTicketing.t.sol:BatchTicketingTest
+[PASS] testBatchBuyTickets() (gas: 254441)
+[PASS] testGetTicketPriceDirectly() (gas: 17824)
+[PASS] testRevertIfBatchBuyWrongPhase() (gas: 350973)
+[PASS] testRevertIfExceedsMaxTickets() (gas: 6224386)
+[PASS] testRevertIfIncorrectPayment() (gas: 75415)
+[PASS] testRevertIfTicketAlreadySold() (gas: 247726)
+[PASS] testRevertIfZeroTickets() (gas: 62992)
+[PASS] testVipDiscountApplied() (gas: 414951)
+Suite result: ok. 8 passed; 0 failed; 0 skipped; finished in 365.48ms (42.47ms CPU time)
+
+Ran 3 tests for test/extended/AdminAndProxy.t.sol:AdminAndProxyTest
+[PASS] testPauseAndUnpause() (gas: 327484)
+[PASS] testProxyUpgrade() (gas: 3481909)
+[PASS] testRevertIfNonOwnerUpgrades() (gas: 3467878)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 363.17ms (42.58ms CPU time)
+
+Ran 9 tests for test/base/BuyTicket.t.sol:BuyTicketTest
+[PASS] testBatchBuyTickets() (gas: 218614)
+[PASS] testGetTicketCount() (gas: 350401)
+[PASS] testRevertIfBatchBuyExceedsLimit() (gas: 47398)
+[PASS] testRevertIfBatchBuyWrongPhase() (gas: 178975)
+[PASS] testRevertIfBatchBuyWrongPrice() (gas: 42664)
+[PASS] testRevertIfBatchBuyZeroTickets() (gas: 40189)
+[PASS] testRevertIfBuyTicketAfterSaleClosed() (gas: 178064)
+[PASS] testRevertIfBuyTicketWrongPrice() (gas: 41731)
+[PASS] testRevertIfSoldOut() (gas: 2501960)
+Suite result: ok. 9 passed; 0 failed; 0 skipped; finished in 2.37ms (1.49ms CPU time)
+
+Ran 4 tests for test/security/AttackerBots.t.sol:AttackerBotsTest
+[PASS] testBot_GreedyReentrancyAttempt() (gas: 349164)
+[PASS] testBot_MinerBlockManipulation() (gas: 366107)
+[PASS] testBot_OwnerCanDenyServiceByWithholdingSecret() (gas: 297286)
+[PASS] testBot_OwnerCannotTamperWithCommitment() (gas: 225299)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 3.03ms (1.34ms CPU time)
+
+Ran 4 tests for test/base/ClaimPrize.t.sol:ClaimPrizeTest
+[PASS] testRevertIfClaimBeforeDrawn() (gas: 1901834)
+[PASS] testRevertIfNonWinnerClaimsPrize() (gas: 42268)
+[PASS] testRevertIfPrizeAlreadyClaimed() (gas: 75453)
+[PASS] testRevertIfTransferFailed() (gas: 2376826)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 2.33ms (997.42µs CPU time)
+
+Ran 7 tests for test/extended/VRFAndTreasury.t.sol:VRFAndTreasuryTest
+[PASS] testFulfillRandomWordsRolloverLoop() (gas: 452627)
+[PASS] testFulfillRandomWordsSplitsPoolAndRestarts() (gas: 626837)
+[PASS] testFulfillRandomWordsWrongPhaseReturnsEarly() (gas: 62887)
+[PASS] testRevertIfOnlyCoordinatorCanFulfill() (gas: 42408)
+[PASS] testRevertIfWithdrawPrizeNoFunds() (gas: 61896)
+[PASS] testRevertIfWithdrawPrizeTransferFailed() (gas: 864389)
+[PASS] testWithdrawPrize() (gas: 493132)
+Suite result: ok. 7 passed; 0 failed; 0 skipped; finished in 4.08ms (2.10ms CPU time)
+
+Ran 10 tests for test/LotteryVRF.t.sol:LotteryVRFTest
+[PASS] testVRFDrawLifecycle() (gas: 353785)
+Logs:
+  The VRF randomly selected: 0xEb0A3b7B96C1883858292F0039161abD287E3324
+
+[PASS] test_FulfillRandomWords_WrongPhase_ReturnsEarly() (gas: 141438)
+[PASS] test_RevertIf_BuyTicketWrongPhase() (gas: 227703)
+[PASS] test_RevertIf_BuyTicketWrongPrice() (gas: 41202)
+[PASS] test_RevertIf_ClaimPrizeNotWinner() (gas: 291841)
+[PASS] test_RevertIf_ClaimPrizeWrongPhase() (gas: 39781)
+[PASS] test_RevertIf_CloseSaleNoParticipants() (gas: 37360)
+[PASS] test_RevertIf_CloseSaleNotOwner() (gas: 34690)
+[PASS] test_RevertIf_CloseSaleWrongPhase() (gas: 219432)
+[PASS] test_RevertIf_TransferFailed() (gas: 564107)
+Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 8.06ms (9.81ms CPU time)
+
+Ran 2 tests for test/security/BiasTest.t.sol:RandomnessBiasTest
+[PASS] test_LastMinuteSnipeDoesNotBreakMath() (gas: 226320)
+[PASS] test_MathematicalDistributionBias() (gas: 43078121)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 262.34ms (261.53ms CPU time)
+
+Ran 4 tests for test/security/StressTest.t.sol:LotterySecurityTest
+[PASS] invariant_ContractBalanceNeverBreaks() (runs: 10000, calls: 5000000, reverts: 4998305)
+
+╭----------+-------------------+--------+---------+----------╮
+| Contract | Selector          | Calls  | Reverts | Discards |
++============================================================+
+| Lottery  | batchBuyTickets   | 624342 | 624342  | 0        |
+|----------+-------------------+--------+---------+----------|
+| Lottery  | buyTicket         | 624594 | 624594  | 0        |
+|----------+-------------------+--------+---------+----------|
+| Lottery  | claimPrize        | 625101 | 625101  | 0        |
+|----------+-------------------+--------+---------+----------|
+| Lottery  | closeSale         | 625429 | 625429  | 0        |
+|----------+-------------------+--------+---------+----------|
+| Lottery  | commitHash        | 624332 | 624332  | 0        |
+|----------+-------------------+--------+---------+----------|
+| Lottery  | renounceOwnership | 624786 | 623941  | 0        |
+|----------+-------------------+--------+---------+----------|
+| Lottery  | revealAndDraw     | 626158 | 626158  | 0        |
+|----------+-------------------+--------+---------+----------|
+| Lottery  | transferOwnership | 625258 | 624408  | 0        |
+╰----------+-------------------+--------+---------+----------╯
+
+[PASS] testFuzz_RevertIfOverpayment(uint256) (runs: 10000, μ: 40842, ~: 40842)
+[PASS] test_MassiveConcurrentBuyers() (gas: 6868398)
+[PASS] test_SecurePrizeClaiming() (gas: 453808)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 192.98s (194.70s CPU time)
+
+╭----------------------------------+-----------------+--------+--------+---------+---------╮
+| src/Lottery.sol:Lottery Contract |                 |        |        |         |         |
++==========================================================================================+
+| Deployment Cost                  | Deployment Size |        |        |         |         |
+|----------------------------------+-----------------+--------+--------+---------+---------|
+| 1829616                          | 8810            |        |        |         |         |
+|----------------------------------+-----------------+--------+--------+---------+---------|
+|                                  |                 |        |        |         |         |
+|----------------------------------+-----------------+--------+--------+---------+---------|
+| Function Name                    | Min             | Avg    | Median | Max     | # Calls |
+|----------------------------------+-----------------+--------+--------+---------+---------|
+| batchBuyTickets                  | 24179           | 363787 | 56537  | 2445889 | 8       |
+|----------------------------------+-----------------+--------+--------+---------+---------|
+| buyTicket                        | 23800           | 37142  | 23822  | 93616   | 383     |
+|----------------------------------+-----------------+--------+--------+---------+---------|
+| claimPrize                       | 29128           | 33345  | 33421  | 37472   | 9       |
+|----------------------------------+-----------------+--------+--------+---------+---------|
+| closeSale                        | 23824           | 29195  | 29866  | 29866   | 23      |
+|----------------------------------+-----------------+--------+--------+---------+---------|
+| commitHash                       | 24553           | 46361  | 50994  | 50994   | 17      |
+|----------------------------------+-----------------+--------+--------+---------+---------|
+| getLotteryInfo                   | 9513            | 9513   | 9513   | 9513    | 4       |
+|----------------------------------+-----------------+--------+--------+---------+---------|
+| getTicketCount                   | 2818            | 8280   | 7771   | 12863   | 5       |
+|----------------------------------+-----------------+--------+--------+---------+---------|
+| participants                     | 5046            | 5046   | 5046   | 5046    | 1       |
+|----------------------------------+-----------------+--------+--------+---------+---------|
+| prizePool                        | 2540            | 2540   | 2540   | 2540    | 4       |
+|----------------------------------+-----------------+--------+--------+---------+---------|
+| renounceOwnership                | 7287            | 7287   | 7287   | 7287    | 94      |
+|----------------------------------+-----------------+--------+--------+---------+---------|
+| revealAndDraw                    | 24339           | 52052  | 60957  | 61005   | 12      |
+|----------------------------------+-----------------+--------+--------+---------+---------|
+| transferOwnership                | 4854            | 7608   | 7654   | 7654    | 124     |
+|----------------------------------+-----------------+--------+--------+---------+---------|
+| winner                           | 2558            | 2558   | 2558   | 2558    | 4       |
+╰----------------------------------+-----------------+--------+--------+---------+---------╯
+
+╭--------------------------------------+-----------------+--------+--------+---------+---------╮
+| src/LotteryEX.sol:LotteryEX Contract |                 |        |        |         |         |
++==============================================================================================+
+| Deployment Cost                      | Deployment Size |        |        |         |         |
+|--------------------------------------+-----------------+--------+--------+---------+---------|
+| 3376696                              | 15816           |        |        |         |         |
+|--------------------------------------+-----------------+--------+--------+---------+---------|
+|                                      |                 |        |        |         |         |
+|--------------------------------------+-----------------+--------+--------+---------+---------|
+| Function Name                        | Min             | Avg    | Median | Max     | # Calls |
+|--------------------------------------+-----------------+--------+--------+---------+---------|
+| batchBuyTickets                      | 2830            | 765330 | 145241 | 5976581 | 27      |
+|--------------------------------------+-----------------+--------+--------+---------+---------|
+| checkUpkeep                          | 5609            | 8233   | 8336   | 10651   | 4       |
+|--------------------------------------+-----------------+--------+--------+---------+---------|
+| claimRefund                          | 8319            | 19837  | 10651  | 40541   | 3       |
+|--------------------------------------+-----------------+--------+--------+---------+---------|
+| currentRoundId                       | 2474            | 2474   | 2474   | 2474    | 2       |
+|--------------------------------------+-----------------+--------+--------+---------+---------|
+| enableRefundFallback                 | 4725            | 20532  | 11432  | 45440   | 3       |
+|--------------------------------------+-----------------+--------+--------+---------+---------|
+| getTicketPrice                       | 5010            | 5010   | 5010   | 5010    | 1       |
+|--------------------------------------+-----------------+--------+--------+---------+---------|
+| initialize                           | 278034          | 278034 | 278034 | 278034  | 30      |
+|--------------------------------------+-----------------+--------+--------+---------+---------|
+| pause                                | 26317           | 26317  | 26317  | 26317   | 1       |
+|--------------------------------------+-----------------+--------+--------+---------+---------|
+| pendingWithdrawals                   | 2924            | 2924   | 2924   | 2924    | 5       |
+|--------------------------------------+-----------------+--------+--------+---------+---------|
+| performUpkeep                        | 7298            | 62270  | 78266  | 78274   | 13      |
+|--------------------------------------+-----------------+--------+--------+---------+---------|
+| rawFulfillRandomWords                | 3380            | 69192  | 100972 | 101398  | 6       |
+|--------------------------------------+-----------------+--------+--------+---------+---------|
+| rounds                               | 10286           | 10286  | 10286  | 10286   | 10      |
+|--------------------------------------+-----------------+--------+--------+---------+---------|
+| unpause                              | 9193            | 9193   | 9193   | 9193    | 1       |
+|--------------------------------------+-----------------+--------+--------+---------+---------|
+| upgradeToAndCall                     | 4168            | 8095   | 8095   | 12023   | 2       |
+|--------------------------------------+-----------------+--------+--------+---------+---------|
+| withdrawPrize                        | 17953           | 20317  | 18104  | 24895   | 3       |
+╰--------------------------------------+-----------------+--------+--------+---------+---------╯
+
+╭----------------------------------------+-----------------+-------+--------+-------+---------╮
+| src/LotteryVRF.sol:LotteryVRF Contract |                 |       |        |       |         |
++=============================================================================================+
+| Deployment Cost                        | Deployment Size |       |        |       |         |
+|----------------------------------------+-----------------+-------+--------+-------+---------|
+| 1385704                                | 7271            |       |        |       |         |
+|----------------------------------------+-----------------+-------+--------+-------+---------|
+|                                        |                 |       |        |       |         |
+|----------------------------------------+-----------------+-------+--------+-------+---------|
+| Function Name                          | Min             | Avg   | Median | Max   | # Calls |
+|----------------------------------------+-----------------+-------+--------+-------+---------|
+| buyTicket                              | 23568           | 70175 | 91407  | 91407 | 8       |
+|----------------------------------------+-----------------+-------+--------+-------+---------|
+| claimPrize                             | 28830           | 29915 | 29915  | 31000 | 2       |
+|----------------------------------------+-----------------+-------+--------+-------+---------|
+| closeSaleAndDraw                       | 23761           | 60395 | 81886  | 81886 | 8       |
+|----------------------------------------+-----------------+-------+--------+-------+---------|
+| currentPhase                           | 2656            | 2656  | 2656   | 2656  | 3       |
+|----------------------------------------+-----------------+-------+--------+-------+---------|
+| rawFulfillRandomWords                  | 25261           | 25261 | 25261  | 25261 | 1       |
+|----------------------------------------+-----------------+-------+--------+-------+---------|
+| winner                                 | 2580            | 2580  | 2580   | 2580  | 1       |
+╰----------------------------------------+-----------------+-------+--------+-------+---------╯
+
+
+Ran 14 test suites in 193.15s (195.81s CPU time): 70 tests passed, 0 failed, 0 skipped (70 total tests)

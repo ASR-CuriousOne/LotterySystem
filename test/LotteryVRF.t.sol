@@ -6,30 +6,54 @@ import {LotteryVRF} from "../src/LotteryVRF.sol";
 import {VRFCoordinatorV2Mock} from "chainlink-brownie-contracts/contracts/src/v0.8/vrf/mocks/VRFCoordinatorV2Mock.sol";
 
 /**
- * @title VRF Lottery Test Suite
- * @notice Validates the Chainlink VRF implementation of the lottery, including mock oracle interactions.
+ * @title Veritas VRF Lottery Test Suite
+ * @author BitBoyz Team
+ * @notice Validates the Chainlink VRF implementation (Tier 2) of the lottery protocol.
+ * @dev Inherits from Foundry's Test. Orchestrates mock oracle interactions using the VRFCoordinatorV2Mock
+ * to verify asynchronous randomness delivery and phase-gate integrity.
  */
 contract LotteryVRFTest is Test {
-    /// @notice The primary VRF lottery instance being tested
+    /**
+     *  @notice The primary instance of the VRF-powered lottery being subjected to lifecycle testing.
+     */
     LotteryVRF public lotteryVrf;
 
-    /// @notice The local mock representation of the Chainlink VRF Coordinator
+    /**
+     *  @notice Local mock of the Chainlink VRF Coordinator used to simulate randomness fulfillment in a sandbox.
+     */
     VRFCoordinatorV2Mock public vrfMock;
 
-    /// @notice Standardized test accounts
+    /**
+     * @notice Administrative address with privileged access to the draw and configuration functions.
+     */
     address public owner = makeAddr("owner");
+
+    /**
+     * @notice Mock player address used for standard entry and winning verification.
+     */
     address public player1 = makeAddr("player1");
+
+    /**
+     * @notice The mock subscription ID for simulated VRF billing and consumer management.
+     */
     address public player2 = makeAddr("player2");
 
-    /// @notice The mock Chainlink subscription ID
+    /**
+     *  @notice The mock Chainlink subscription ID used for simulated VRF billing and consumer management.
+     */
     uint64 public subId;
 
-    /// @notice Standardized ticket price for the test suite
+    /**
+     * @notice The standardized ticket cost (0.01 ETH) consistent across all project architectures.
+     */
     uint256 public constant TICKET_PRICE = 0.01 ether;
 
     /**
-     * @notice Initializes the test environment before each run.
-     * @dev Deploys the VRF mock, creates and funds a subscription, and deploys the lottery contract.
+     * @notice Configures the VRF test environment before each execution.
+     * @dev Deploys the mock coordinator, manages subscription funding, and registers the lottery as a consumer.
+     * Includes an explicit cast of "mock-key-hash" to bytes32, which is safe as the string length (13 bytes)
+     * is well within the 32-byte slot capacity.
+     * forge-lint: disable-next-line(unsafe-typecast)
      */
     function setUp() public {
         vrfMock = new VRFCoordinatorV2Mock(0.1 ether, 1e9);
@@ -49,8 +73,9 @@ contract LotteryVRFTest is Test {
     }
 
     /**
-     * @notice Tests the complete lifecycle of the VRF lottery.
-     * @dev Simulates ticket purchases, the draw request, and the asynchronous oracle callback.
+     * @notice Validates the full successful lifecycle of a VRF-powered draw.
+     * @dev Simulates participant entry, owner draw requests, and mock fulfillment.
+     * Asserts correct phase transitions (Open -> Calculating -> Drawn).
      */
     function testVRFDrawLifecycle() public {
         vm.prank(player1);
@@ -74,7 +99,7 @@ contract LotteryVRFTest is Test {
     }
 
     /**
-     * @notice Ensures transactions revert if the exact ticket price is not sent.
+     * @notice Verifies that payments deviating from the strict ticket price result in an IncorrectPayment revert.
      */
     function test_RevertIf_BuyTicketWrongPrice() public {
         vm.prank(player1);
@@ -83,7 +108,7 @@ contract LotteryVRFTest is Test {
     }
 
     /**
-     * @notice Ensures users cannot purchase tickets while the oracle is calculating the winner.
+     * @notice Confirms that ticket sales are blocked while the contract is awaiting the oracle result.
      */
     function test_RevertIf_BuyTicketWrongPhase() public {
         // Move to Calculating phase
@@ -100,7 +125,7 @@ contract LotteryVRFTest is Test {
     }
 
     /**
-     * @notice Validates that access control correctly prevents non-owners from drawing the lottery.
+     * @notice Ensures administrative draw functions are strictly restricted to the authorized owner.
      */
     function test_RevertIf_CloseSaleNotOwner() public {
         vm.prank(player1); // Not the owner
@@ -109,7 +134,7 @@ contract LotteryVRFTest is Test {
     }
 
     /**
-     * @notice Ensures the lottery cannot be drawn if no one has purchased a ticket.
+     * @notice Validates the division-by-zero prevention guard when the participant pool is empty.
      */
     function test_RevertIf_CloseSaleNoParticipants() public {
         vm.prank(owner);
@@ -118,7 +143,7 @@ contract LotteryVRFTest is Test {
     }
 
     /**
-     * @notice Ensures the prize cannot be claimed before the oracle has delivered the result.
+     * @notice Ensures prize claiming is gated behind the successful completion of an oracle draw.
      */
     function test_RevertIf_ClaimPrizeWrongPhase() public {
         vm.prank(player1);
@@ -127,7 +152,8 @@ contract LotteryVRFTest is Test {
     }
 
     /**
-     * @notice Ensures that only the selected winner can execute the claim function.
+     * @notice Verifies that only the mathematically selected winning address can withdraw the prize pool.
+     * @dev Uses a single-participant draw to guarantee the winner identity for testing.
      */
     function test_RevertIf_ClaimPrizeNotWinner() public {
         vm.prank(player1);
@@ -145,8 +171,8 @@ contract LotteryVRFTest is Test {
     }
 
     /**
-     * @notice Validates the TransferFailed error by forcing a failed ETH push to a smart contract.
-     * @dev Utilizes the RejectETH dummy contract to intentionally fail the receive operation.
+     * @notice Validates error handling for failed ETH transfers to incompatible recipients.
+     * @dev Utilizes the RejectETH contract to trigger the TransferFailed selector.
      */
     function test_RevertIf_TransferFailed() public {
         // Deploy a contract that rejects receiving ETH
@@ -167,7 +193,8 @@ contract LotteryVRFTest is Test {
     }
 
     /**
-     * @notice Ensures the oracle callback safely returns without altering state if called in the wrong phase.
+     * @notice Tests the protocol's resilience to out-of-order or stale oracle callbacks.
+     * @dev Verifies that callbacks delivered in an incorrect phase return early without altering state.
      */
     function test_FulfillRandomWords_WrongPhase_ReturnsEarly() public {
         vm.prank(player1);
@@ -185,7 +212,7 @@ contract LotteryVRFTest is Test {
     }
 
     /**
-     * @notice Ensures the owner cannot trigger the draw twice.
+     * @notice Prevents the owner from initiating multiple simultaneous randomness requests for a single round.
      */
     function test_RevertIf_CloseSaleWrongPhase() public {
         vm.prank(player1);
@@ -202,29 +229,33 @@ contract LotteryVRFTest is Test {
 }
 
 /**
- * @title RejectETH Dummy Contract
- * @notice A malicious or incompatible contract designed to fail ETH transfers.
- * @dev Used strictly for testing the error handling of the claimPrize function.
+ * @title RejectETH Mock (VRF Variant)
+ * @author BitBoyz Team
+ * @notice A specialized test contract used to simulate failed native ETH transfers.
+ * @dev Deliberately lacks a receive() or fallback() function to force low-level .call operations to fail.
  */
 contract RejectETH {
+    /**
+     * @notice The VRF lottery instance targeted for the transfer failure test.
+     */
     LotteryVRF public target;
 
     /**
-     * @notice Initializes the dummy contract with the target lottery address.
+     * @notice Links the mock contract to the target VRF lottery instance.
      */
     constructor(LotteryVRF _target) {
         target = _target;
     }
 
     /**
-     * @notice Forwards the msg.value to the lottery contract to purchase a ticket.
+     * @notice Forwards ETH from the test runner to enter the lottery pool.
      */
     function buy() external payable {
         target.buyTicket{value: msg.value}();
     }
 
     /**
-     * @notice Attempts to claim the prize from the target lottery.
+     * @notice Attempts to withdraw the prize, triggering a TransferFailed revert in the target contract.
      */
     function claim() external {
         target.claimPrize();

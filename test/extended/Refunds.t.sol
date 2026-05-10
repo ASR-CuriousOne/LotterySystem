@@ -4,7 +4,22 @@ pragma solidity ^0.8.20;
 import {BaseExtendedTest} from "./BaseExtended.t.sol";
 import {LotteryEX} from "../../src/LotteryEX.sol";
 
+/**
+ * @title Veritas Trustless Refund Test Suite
+ * @author BitBoyz Team
+ * @notice Validates the fallback mechanisms designed to protect user capital during extended oracle or keeper outages.
+ * @dev Inherits from BaseExtendedTest. Focuses on the DRAW_TIMEOUT boundary conditions and the integrity of the
+ * Refundable state machine transition.
+ */
 contract RefundsTest is BaseExtendedTest {
+    /**
+     * @notice Validates the end-to-end "Happy Path" for the trustless refund mechanism.
+     * @dev This test confirms that:
+     * 1. Refunds cannot be triggered before the specific DRAW_TIMEOUT has elapsed[cite: 92, 250].
+     * 2. Successful expiration transitions the round to the 'Refundable' phase and increments the currentRoundId[cite: 92].
+     * 3. Legitimate ticket owners can claim their original 0.01 ETH entry fee into their pending withdrawal vault[cite: 90].
+     * 4. Double-claiming a refund for the same ticket index is strictly prohibited[cite: 142].
+     */
     function testEnableRefundFallbackAndClaim() public {
         uint8[] memory indices = new uint8[](1);
         indices[0] = 7;
@@ -34,6 +49,10 @@ contract RefundsTest is BaseExtendedTest {
         lottery.claimRefund(1, 7);
     }
 
+    /**
+     * @notice Ensures that users cannot claim refunds while a round is still in the 'Open' or 'Calculating' phases.
+     * @dev Protects the protocol's prize pool integrity by enforcing phase gating for all capital exits[cite: 66, 156].
+     */
     function testRevertIfClaimRefundWrongPhase() public {
         uint8[] memory indices = new uint8[](1);
         indices[0] = 7;
@@ -45,6 +64,10 @@ contract RefundsTest is BaseExtendedTest {
         lottery.claimRefund(1, 7);
     }
 
+    /**
+     * @notice Verifies that the refund fallback cannot be initialized unless the round is stuck in the 'Calculating' state.
+     * @dev Prevents the trustless timeout from being used to prematurely abort active ticket sales in the 'Open' phase[cite: 156].
+     */
     function testRevertIfEnableRefundFallbackWrongPhase() public {
         vm.expectRevert(LotteryEX.InvalidPhase.selector);
         lottery.enableRefundFallback();

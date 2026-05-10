@@ -9,84 +9,121 @@ import {
 } from "chainlink-brownie-contracts/contracts/src/v0.8/vrf/interfaces/VRFCoordinatorV2Interface.sol";
 
 /**
- * @title VRF-Powered Lottery
- * @notice An alternative implementation using Chainlink VRF for provably fair randomness.
+ * @title Veritas VRF-Powered Lottery (Tier 2)
+ * @author BitBoyz Team
+ * @notice A lottery implementation that utilizes Chainlink VRF for provably fair, tamper-proof randomness.
  * @dev Inherits from VRFConsumerBaseV2, Ownable, and ReentrancyGuard.
+ * This architecture replaces the manual owner-led commit-reveal process with a decentralized oracle request-response loop.
  */
 contract LotteryVRF is VRFConsumerBaseV2, Ownable, ReentrancyGuard {
-    /// @notice Represents the current operational state of the lottery
+    /**
+     * @notice Operational phases of the VRF-powered lottery.
+     * @custom:value Open Tickets can be purchased by participants.
+     * @custom:value Calculating Awaiting randomness fulfillment from the oracle network.
+     * @custom:value Drawn The winner has been selected and funds are ready for claiming.
+     */
     enum Phase {
         Open,
         Calculating,
         Drawn
     }
 
-    /// @notice The current phase of the lottery lifecycle
+    /**
+     * @notice The current operational state of the lottery instance.
+     */
     Phase public currentPhase;
 
-    /// @notice The fixed cost to enter the lottery
+    /**
+     *  @notice The immutable cost in wei to purchase one entry.
+     */
     uint256 public immutable TICKET_PRICE;
 
-    /// @notice The total amount of ETH collected from ticket sales
+    /**
+     *  @notice The total ETH accumulated for the current round's prize.
+     */
     uint256 public prizePool;
 
-    /// @notice The address of the randomly selected winner
+    /**
+     *  @notice The address of the participant selected by the VRF callback.
+     */
     address public winner;
 
-    /// @notice Array containing all ticket purchaser addresses
+    /**
+     *  @notice The dynamic list of participant addresses for the current round.
+     */
     address[] public participants;
 
-    // --- Chainlink VRF Variables ---
-    /// @notice The Chainlink VRF Coordinator contract interface
+    /**
+     *  @notice Interface for interacting with the Chainlink VRF Coordinator.
+     */
     VRFCoordinatorV2Interface public immutable VRF_COORDINATOR;
 
-    /// @notice The gas lane key hash value for the VRF request
+    /**
+     *  @notice The gas lane key hash used to set the price for a randomness request.
+     */
     bytes32 public immutable KEY_HASH;
 
-    /// @notice The ID of the funded Chainlink VRF subscription
+    /**
+     *  @notice The unique ID of the funded Chainlink subscription used to pay for requests.
+     */
     uint64 public immutable SUBSCRIPTION_ID;
 
-    /// @notice The number of block confirmations required before fulfilling the request
+    /**
+     *  @notice The number of block confirmations the oracle waits before responding to protect against reorgs.
+     */
     uint16 public constant REQUEST_CONFIRMATIONS = 3;
 
-    /// @notice The gas limit for the callback fulfillRandomWords function
+    /**
+     *  @notice The maximum amount of gas permitted for the oracle to spend executing the callback function.
+     */
     uint32 public constant CALLBACK_GAS_LIMIT = 100000;
 
-    /// @notice The number of random words to request from the oracle
+    /**
+     *  @notice The specific quantity of random values requested from the Chainlink VRF per draw.
+     */
     uint32 public constant NUM_WORDS = 1;
 
-    // --- Custom Errors ---
-    /// @notice Thrown when an action is attempted in the wrong lifecycle phase
+    /**
+     * @notice Thrown when a function is called outside its permitted lifecycle phase.
+     */
     error InvalidPhase();
 
-    /// @notice Thrown when the msg.value does not exactly match the ticket price
+    /**
+     *  @notice Thrown when the sent ETH does not exactly match the TICKET_PRICE. [cite: 136]
+     */
     error IncorrectPayment();
 
-    /// @notice Thrown when a non-winner attempts to claim the prize
+    /**
+     *  @notice Thrown if an address other than the selected winner attempts to claim the prize. [cite: 8]
+     */
     error NotWinner();
 
-    /// @notice Thrown when the ETH transfer to the winner fails
+    /**
+     *  @notice Thrown when the native ETH transfer to the winner fails. [cite: 24]
+     */
     error TransferFailed();
 
-    // --- Events ---
-    /// @notice Emitted when a user successfully purchases a ticket
-    /// @param buyer The address of the ticket purchaser
+    /**
+     *  @notice Emitted when a participant enters the lottery round.
+     */
     event TicketPurchased(address indexed buyer);
 
-    /// @notice Emitted when the owner triggers the VRF randomness request
-    /// @param requestId The unique ID assigned to the Chainlink VRF request
+    /**
+     *  @notice Emitted when the owner triggers the randomness request to the Chainlink network.
+     */
     event RandomnessRequested(uint256 requestId);
 
-    /// @notice Emitted when the oracle callback selects the final winner
-    /// @param winner The address of the winning participant
+    /**
+     *  @notice Emitted when the oracle delivers the randomness and a winner is selected.
+     */
     event WinnerDrawn(address indexed winner);
 
     /**
-     * @notice Initializes the VRF lottery contract.
-     * @param _ticketPrice The cost of a single ticket in wei.
-     * @param _vrfCoordinator The address of the Chainlink VRF Coordinator.
-     * @param _keyHash The key hash for the network's gas lane.
-     * @param _subscriptionId The Chainlink subscription ID.
+     * @notice Configures the contract with the necessary Chainlink VRF parameters and ticket pricing.
+     * @param _ticketPrice The cost of a single entry in wei.
+     * @param _vrfCoordinator The address of the decentralized oracle coordinator.
+     * @param _keyHash The network-specific gas lane identifier.
+     * @param _subscriptionId The funded subscription ID for VRF fee billing.
      */
     constructor(uint256 _ticketPrice, address _vrfCoordinator, bytes32 _keyHash, uint64 _subscriptionId)
         VRFConsumerBaseV2(_vrfCoordinator)
@@ -100,8 +137,9 @@ contract LotteryVRF is VRFConsumerBaseV2, Ownable, ReentrancyGuard {
     }
 
     /**
-     * @notice Allows a user to purchase a ticket by sending the exact TICKET_PRICE.
-     * @dev Adds the buyer to the participants array and increases the prize pool.
+     * @notice Allows a user to enter the lottery by providing the exact payment.
+     * @dev Reverts if the phase is not Open or the payment is incorrect.
+     * Appends the caller's address to the participants array. [cite: 138]
      */
     function buyTicket() external payable {
         if (currentPhase != Phase.Open) revert InvalidPhase();
@@ -113,9 +151,9 @@ contract LotteryVRF is VRFConsumerBaseV2, Ownable, ReentrancyGuard {
     }
 
     /**
-     * @notice Locks the lottery and requests a random number from the Chainlink Oracle.
-     * @dev Replaces the traditional closeSale() and commitHash() functions.
-     * @return requestId The unique identifier for the VRF request.
+     * @notice Closes ticket sales and initiates the request for provable randomness.
+     * @dev Restricted to the contract owner. Transitions the state to 'Calculating'. [cite: 276, 277]
+     * @return requestId The unique identifier generated by the VRF Coordinator.
      */
     function closeSaleAndDraw() external onlyOwner returns (uint256 requestId) {
         if (currentPhase != Phase.Open) revert InvalidPhase();
@@ -132,9 +170,10 @@ contract LotteryVRF is VRFConsumerBaseV2, Ownable, ReentrancyGuard {
     }
 
     /**
-     * @notice The callback function executed by the Chainlink Oracle to deliver randomness.
-     * @dev Determines the winner using modulo arithmetic against the participants array length.
-     * @param randomWords The array of random numbers provided by the oracle.
+     * @notice Asynchronous callback executed by the Chainlink Oracle to deliver verified randomness.
+     * @dev Uses modulo arithmetic against the participants list to select a winner. [cite: 280]
+     * Transitions the contract to the 'Drawn' phase upon successful selection.
+     * @param randomWords The cryptographically verified random data provided by the oracle.
      */
     function fulfillRandomWords(
         uint256,
@@ -154,8 +193,9 @@ contract LotteryVRF is VRFConsumerBaseV2, Ownable, ReentrancyGuard {
     }
 
     /**
-     * @notice Allows the designated winner to withdraw the entire prize pool.
-     * @dev Implements the Checks-Effects-Interactions (CEI) pattern and ReentrancyGuard.
+     * @notice Facilitates the withdrawal of the prize pool by the verified winner.
+     * @dev Strictly enforces the Checks-Effects-Interactions (CEI) pattern to mitigate reentrancy. [cite: 168, 185]
+     * Zeroes the prizePool in storage before executing the native ETH transfer. [cite: 186]
      */
     function claimPrize() external nonReentrant {
         if (currentPhase != Phase.Drawn) revert InvalidPhase();
