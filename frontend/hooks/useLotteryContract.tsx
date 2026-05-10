@@ -39,14 +39,21 @@ export function useLotteryContract() {
     query: { enabled: isContractConfigured },
   });
 
-  const { data: pendingWithdrawalsData, refetch: refetchPendingWithdrawals } =
+  const { data: getTicketCountData, refetch: refetchTicketCount } =
     useReadContract({
       address: LOTTERY_CONTRACT_ADDRESS,
       abi: LOTTERY_ABI,
-      functionName: "pendingWithdrawals",
+      functionName: "getTicketCount",
       args: [address ?? ZERO_ADDRESS],
       query: { enabled: isContractConfigured && !!address },
     });
+
+  const { data: maxTicketsData } = useReadContract({
+    address: LOTTERY_CONTRACT_ADDRESS,
+    abi: LOTTERY_ABI,
+    functionName: "maxTickets",
+    query: { enabled: isContractConfigured },
+  });
 
   const { data: committedHashData, refetch: refetchCommittedHash } =
     useReadContract({
@@ -56,21 +63,13 @@ export function useLotteryContract() {
       query: { enabled: isContractConfigured },
     });
 
-  const { data: ticketBitmapData, refetch: refetchTicketBitmap } =
-    useReadContract({
-      address: LOTTERY_CONTRACT_ADDRESS,
-      abi: LOTTERY_ABI,
-      functionName: "ticketBitmap",
-      query: { enabled: isContractConfigured },
-    });
-
   useWatchContractEvent({
     address: LOTTERY_CONTRACT_ADDRESS,
     abi: LOTTERY_ABI,
     eventName: "TicketPurchased",
     onLogs() {
       refetchLotteryInfo();
-      refetchTicketBitmap();
+      refetchTicketCount();
     },
   });
 
@@ -99,7 +98,6 @@ export function useLotteryContract() {
     eventName: "WinnerDrawn",
     onLogs() {
       refetchLotteryInfo();
-      refetchPendingWithdrawals();
     },
   });
 
@@ -108,12 +106,16 @@ export function useLotteryContract() {
     abi: LOTTERY_ABI,
     eventName: "PrizeClaimed",
     onLogs() {
-      refetchPendingWithdrawals();
+      refetchLotteryInfo();
     },
   });
 
   const { writeContractAsync: writeBuyTicket, isPending: isEntering } =
     useWriteContract();
+  const {
+    writeContractAsync: writeBatchBuyTickets,
+    isPending: isBatchEntering,
+  } = useWriteContract();
   const { writeContractAsync: writeClaimPrize, isPending: isClaiming } =
     useWriteContract();
   const { writeContractAsync: writeCloseSale, isPending: isClosing } =
@@ -133,20 +135,30 @@ export function useLotteryContract() {
   const winningAddress = lotteryInfo?.[4] ?? ZERO_ADDRESS;
 
   const owner = (ownerData as Address | undefined) ?? ZERO_ADDRESS;
-  const ticketBitmap = (ticketBitmapData as bigint | undefined) ?? BigInt(0);
+  const maxTickets = Number(
+    (maxTicketsData as bigint | undefined) ?? BigInt(0),
+  );
+  const userTicketCount = Number(
+    (getTicketCountData as bigint | undefined) ?? BigInt(0),
+  );
   const committedHash =
     (committedHashData as `0x${string}` | undefined) ?? "0x0";
-  const pendingWithdrawalsWei =
-    (pendingWithdrawalsData as bigint | undefined) ?? BigInt(0);
 
   const phaseLabel = PHASE_LABELS[phase] ?? `Unknown (${phase})`;
   const ticketPrice = ticketPriceWei ? formatEther(ticketPriceWei) : "0";
   const prizePool = formatEther(prizePoolWei);
-  const pendingWithdrawals = formatEther(pendingWithdrawalsWei);
+
+  // User limit configuration
+  const MAX_TICKETS_PER_USER = 10;
+  const canBuyTickets = userTicketCount < MAX_TICKETS_PER_USER;
 
   const isManager =
     isConnected && !!address && address.toLowerCase() === owner.toLowerCase();
-  const canWithdraw = pendingWithdrawalsWei > BigInt(0);
+  const canClaimPrize =
+    isConnected &&
+    !!address &&
+    address.toLowerCase() === winningAddress.toLowerCase() &&
+    prizePoolWei > BigInt(0);
 
   const waitForSuccessfulReceipt = async (hash: `0x${string}`) => {
     if (!publicClient) return;
@@ -157,19 +169,35 @@ export function useLotteryContract() {
     }
   };
 
-  const buyTicket = async (ticketIndex: number) => {
+  const buyTicket = async () => {
     if (!isContractConfigured)
       throw new Error("Set LOTTERY_CONTRACT_ADDRESS in lib/contract.ts first.");
+    if (!canBuyTickets) throw new Error("Ticket limit per user reached.");
     const tx = await writeBuyTicket({
       address: LOTTERY_CONTRACT_ADDRESS,
       abi: LOTTERY_ABI,
       functionName: "buyTicket",
-      args: [ticketIndex],
       value: ticketPriceWei,
     });
     await waitForSuccessfulReceipt(tx);
     refetchLotteryInfo();
-    refetchTicketBitmap();
+    refetchTicketCount();
+  };
+
+  const batchBuyTickets = async (amount: number) => {
+    if (!isContractConfigured) throw new Error("Contract not configured.");
+    if (userTicketCount + amount > MAX_TICKETS_PER_USER)
+      throw new Error("Exceeds ticket limit per user.");
+    const tx = await writeBatchBuyTickets({
+      address: LOTTERY_CONTRACT_ADDRESS,
+      abi: LOTTERY_ABI,
+      functionName: "batchBuyTickets",
+      args: [BigInt(amount)],
+      value: ticketPriceWei * BigInt(amount),
+    });
+    await waitForSuccessfulReceipt(tx);
+    refetchLotteryInfo();
+    refetchTicketCount();
   };
 
   const claimPrize = async () => {
@@ -181,7 +209,7 @@ export function useLotteryContract() {
       functionName: "claimPrize",
     });
     await waitForSuccessfulReceipt(tx);
-    refetchPendingWithdrawals();
+    refetchLotteryInfo();
   };
 
   const closeSale = async () => {
@@ -218,30 +246,34 @@ export function useLotteryContract() {
     });
     await waitForSuccessfulReceipt(tx);
     refetchLotteryInfo();
-    refetchPendingWithdrawals();
+    // refetchPendingWithdrawals();
   };
 
   return {
     phase,
     ticketsSold,
+    maxTickets,
     prizePool,
     ticketPrice,
     winningAddress,
-    ticketBitmap,
-    pendingWithdrawals,
-    canWithdraw,
+    userTicketCount,
+    MAX_TICKETS_PER_USER,
+    canBuyTickets,
+    canClaimPrize,
     isManager,
     isConnected,
     address,
     phaseLabel,
     committedHash,
     isEntering,
+    isBatchEntering,
     isClaiming,
     isClosing,
     isCommitting,
     isDrawing,
     isContractConfigured,
     buyTicket,
+    batchBuyTickets,
     claimPrize,
     closeSale,
     commitHash,

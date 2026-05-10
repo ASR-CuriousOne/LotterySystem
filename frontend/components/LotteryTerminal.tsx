@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useLotteryContract } from "@/hooks/useLotteryContract";
-import { isTicketSold } from "@/lib/utils";
+// utils removed
 import { getContractErrorMessage } from "@/lib/error-parser";
 import { stringToHex, keccak256, encodePacked } from "viem";
 
@@ -47,27 +47,31 @@ function StatBlock({
 }
 
 export function LotteryTerminal() {
-  const [ticketIndex, setTicketIndex] = useState(0);
+  const [ticketAmount, setTicketAmount] = useState<number | "">(1);
   const [secretPhrase, setSecretPhrase] = useState("");
 
   const {
     ticketsSold,
+    maxTickets,
     prizePool,
     ticketPrice,
     isConnected,
     isEntering,
+    isBatchEntering,
     isClaiming,
-    canWithdraw,
-    pendingWithdrawals,
+    canClaimPrize,
+    userTicketCount,
+    MAX_TICKETS_PER_USER,
+    canBuyTickets,
     phase,
     phaseLabel,
-    ticketBitmap,
     isManager,
     isClosing,
     isCommitting,
     isDrawing,
     isContractConfigured,
     buyTicket,
+    batchBuyTickets,
     claimPrize,
     closeSale,
     commitHash,
@@ -76,10 +80,17 @@ export function LotteryTerminal() {
 
   const handleBuy = async () => {
     try {
-      await buyTicket(ticketIndex);
-      toast.success("Ticket bought successfully", {
-        description: `Ticket #${ticketIndex} is now entered in the draw.`,
-      });
+      if (ticketAmount === 1) {
+        await buyTicket();
+        toast.success("Ticket bought successfully", {
+          description: "1 ticket added to the draw.",
+        });
+      } else if (typeof ticketAmount === "number") {
+        await batchBuyTickets(ticketAmount);
+        toast.success("Tickets bought successfully", {
+          description: `${ticketAmount} tickets added to the draw.`,
+        });
+      }
     } catch (error) {
       toast.error("Transaction failed", {
         description: getContractErrorMessage(error),
@@ -90,8 +101,8 @@ export function LotteryTerminal() {
   const handleClaim = async () => {
     try {
       await claimPrize();
-      toast.success("Withdraw submitted!", {
-        description: "Your pending vault balance is being withdrawn.",
+      toast.success("Prize claimed successfully!", {
+        description: "Your prize has been sent to your wallet.",
       });
     } catch (error) {
       toast.error("Claim failed", {
@@ -187,41 +198,33 @@ export function LotteryTerminal() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-medium text-foreground whitespace-nowrap">
-                    Select a Ticket
+                    Number of Tickets
                   </label>
                   <span className="font-mono text-sm text-primary whitespace-nowrap">
-                    Cost {ticketPrice} ETH
+                    Cost {Number(ticketPrice) * Number(ticketAmount)} ETH
                   </span>
                 </div>
-                <div className="grid grid-cols-8 gap-2 max-h-[220px] overflow-y-auto p-1 scrollbar-none [&::-webkit-scrollbar]:hidden bg-background/50 rounded border border-border/30">
-                  {Array.from({ length: 256 }).map((_, index) => {
-                    const sold =
-                      ticketBitmap !== undefined
-                        ? isTicketSold(ticketBitmap, index)
-                        : false;
-                    return (
-                      <Button
-                        key={index}
-                        disabled={sold || phase !== 0}
-                        variant={
-                          ticketIndex === index
-                            ? "default"
-                            : sold
-                              ? "secondary"
-                              : "outline"
-                        }
-                        onClick={() => setTicketIndex(index)}
-                        className="font-mono text-xs w-full h-8 p-0 transition-all hover:scale-105"
-                        title={
-                          sold
-                            ? `Ticket #${index} is sold`
-                            : `Select Ticket #${index}`
-                        }
-                      >
-                        {index}
-                      </Button>
-                    );
-                  })}
+
+                <div className="flex items-center gap-4">
+                  <Input
+                    type="number"
+                    min={1}
+                    max={Math.min(
+                      MAX_TICKETS_PER_USER - userTicketCount,
+                      maxTickets - ticketsSold,
+                    )}
+                    value={ticketAmount}
+                    onChange={(e) =>
+                      setTicketAmount(
+                        e.target.value === "" ? "" : Number(e.target.value),
+                      )
+                    }
+                    className="font-mono"
+                    disabled={phase !== 0 || !canBuyTickets}
+                  />
+                  <div className="text-xs text-muted-foreground whitespace-nowrap">
+                    Your Tickets: {userTicketCount} / {MAX_TICKETS_PER_USER}
+                  </div>
                 </div>
               </div>
 
@@ -229,15 +232,19 @@ export function LotteryTerminal() {
                 onClick={handleBuy}
                 disabled={
                   isEntering ||
+                  isBatchEntering ||
                   !isContractConfigured ||
                   phase !== 0 ||
-                  (ticketBitmap !== undefined &&
-                    isTicketSold(ticketBitmap, ticketIndex))
+                  !canBuyTickets ||
+                  Number(ticketAmount) < 1 ||
+                  Number(ticketAmount) >
+                    MAX_TICKETS_PER_USER - userTicketCount ||
+                  ticketAmount === ""
                 }
                 className="w-full bg-primary text-primary-foreground font-mono text-base hover:bg-primary/90 glow-primary transition-all"
                 size="lg"
               >
-                {isEntering ? (
+                {isEntering || isBatchEntering ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Confirm in Wallet...
@@ -245,7 +252,8 @@ export function LotteryTerminal() {
                 ) : (
                   <>
                     <Ticket className="mr-2 h-4 w-4" />
-                    Buy Ticket #{ticketIndex}
+                    Buy {ticketAmount} Ticket
+                    {Number(ticketAmount) > 1 ? "s" : ""}
                   </>
                 )}
               </Button>
@@ -253,12 +261,15 @@ export function LotteryTerminal() {
               <div className="space-y-2 rounded-md border border-border/40 bg-secondary/20 p-3">
                 <div className="flex items-center justify-between">
                   <p className="text-xs text-muted-foreground">
-                    Vault balance: {pendingWithdrawals} ETH
+                    You can claim the prize if you are the winner and the prize
+                    is drawn!
                   </p>
                 </div>
                 <Button
                   onClick={handleClaim}
-                  disabled={isClaiming || !isContractConfigured || !canWithdraw}
+                  disabled={
+                    isClaiming || !isContractConfigured || !canClaimPrize
+                  }
                   variant="outline"
                   className="w-full font-mono"
                 >

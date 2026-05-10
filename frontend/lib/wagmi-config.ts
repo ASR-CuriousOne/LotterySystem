@@ -1,6 +1,7 @@
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { metaMaskWallet } from "@rainbow-me/rainbowkit/wallets";
 import { hardhat, sepolia } from "wagmi/chains";
+import { createStorage, cookieStorage } from "wagmi";
 
 const chains = [sepolia, hardhat] as const;
 
@@ -17,4 +18,7 @@ export const config = getDefaultConfig({
     },
   ],
   ssr: true,
+  storage: createStorage({
+    storage: cookieStorage,
+  }),
 });
