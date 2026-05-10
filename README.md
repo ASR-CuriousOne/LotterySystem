@@ -50,7 +50,7 @@ forge build
 
 ### Testing & Coverage
 
-We maintain full line, branch, and function coverage across all contracts (Lottery.sol, LotteryVRF.sol, LotteryEX.sol).
+We maintain full line, branch, and function coverage across all contracts (Lottery.sol, LotteryVRF.sol, LotteryEX.sol). (Might take 2-3 minutes to run.)
 
 ```bash
 # Run the test suites
@@ -62,6 +62,7 @@ forge test --gas-report
 # View the coverage report
 forge coverage
 ```
+(Coverage only matters for the source (src directory) files as they are the only ones deployed.)
 
 ## Deployment Pipeline
 
@@ -153,7 +154,8 @@ docker build -t auditor .
 docker create -it --name tester -v "$(pwd):/workspace/LotterySystem" auditor
 docker start -ai tester
 ```
-
+(Reports like coverage only matter for the source (src directory) files and also this whole local audit might take as long as 2 hours to run.)
+ 
 ## Tech Stack & Standards
 
 - Language: Solidity 0.8.20 & 0.8.22 (UUPS constraints)
